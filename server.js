@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const TelegramBot = require('node-telegram-bot-api');
 const cron = require('node-cron');
 const path = require('path');
+const fs = require('fs');
 
 // Create Express app
 const app = express();
@@ -43,14 +44,27 @@ app.post(`/bot${token}`, (req, res) => {
 cron.schedule('0 0 * * 1', () => {
   console.log('Sending Miku GIF to all channels...');
   
+  // Check if file exists
+  if (!fs.existsSync(mikuGifPath)) {
+    console.error(`❌ GIF file not found at path: ${mikuGifPath}`);
+    return;
+  }
+  
   // Send GIF to all registered chat IDs
   chatIds.forEach(chatId => {
+    console.log(`📤 Attempting to send Monday GIF to chat ${chatId}...`);
     bot.sendAnimation(chatId, mikuGifPath, {
       caption: 'Happy Miku Monday! 🎉\nHave a great week with Hatsune Miku! 🎵'
     }).then(() => {
-      console.log(`Miku GIF sent successfully to chat ${chatId}!`);
+      console.log(`✅ Miku GIF sent successfully to chat ${chatId}!`);
     }).catch((error) => {
-      console.error(`Error sending Miku GIF to chat ${chatId}:`, error);
+      console.error(`❌ Error sending Miku GIF to chat ${chatId}:`, error.message);
+      if (error.response) {
+        console.error(`   Response:`, JSON.stringify(error.response, null, 2));
+      }
+      if (error.code) {
+        console.error(`   Error code: ${error.code}`);
+      }
     });
   });
 });
@@ -60,13 +74,30 @@ if (process.env.NODE_ENV === 'development') {
   cron.schedule('* * * * *', () => {
     console.log('Sending test Miku GIF to all channels...');
     
+    // Check if file exists before attempting to send
+    const fs = require('fs');
+    if (!fs.existsSync(mikuGifPath)) {
+      console.error(`❌ GIF file not found at path: ${mikuGifPath}`);
+      return;
+    }
+    
+    console.log(`✅ GIF file found at: ${mikuGifPath}`);
+    console.log(`📁 File size: ${fs.statSync(mikuGifPath).size} bytes`);
+    
     chatIds.forEach(chatId => {
+      console.log(`📤 Attempting to send GIF to chat ${chatId}...`);
       bot.sendAnimation(chatId, mikuGifPath, {
         caption: 'Test Miku GIF! 🎉'
       }).then(() => {
-        console.log(`Test Miku GIF sent successfully to chat ${chatId}!`);
+        console.log(`✅ Test Miku GIF sent successfully to chat ${chatId}!`);
       }).catch((error) => {
-        console.error(`Error sending test Miku GIF to chat ${chatId}:`, error);
+        console.error(`❌ Error sending test Miku GIF to chat ${chatId}:`, error.message);
+        if (error.response) {
+          console.error(`   Response:`, JSON.stringify(error.response, null, 2));
+        }
+        if (error.code) {
+          console.error(`   Error code: ${error.code}`);
+        }
       });
     });
   });

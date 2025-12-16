@@ -1,0 +1,12 @@
+# Ignore development and unnecessary files
+node_modules/
+.git/
+.gitignore
+.env
+.env.example
+README.md
+USER_GUIDE.md
+*.md
+debug-*.js
+test-*.js
+*.log
