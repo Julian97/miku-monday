@@ -36,6 +36,7 @@ app.use(express.static('public'));
 
 // Webhook route
 app.post(`/bot${token}`, (req, res) => {
+  console.log('📥 Webhook received update:', JSON.stringify(req.body, null, 2));
   bot.processUpdate(req.body);
   res.sendStatus(200);
 });
