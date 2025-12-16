@@ -15,6 +15,7 @@ app.use(bodyParser.json());
 
 // Get bot token from environment variables
 const token = process.env.TELEGRAM_BOT_TOKEN;
+const developerChatId = process.env.DEVELOPER_CHAT_ID; // Optional: for receiving feedback
 
 if (!token) {
   console.error('Missing TELEGRAM_BOT_TOKEN in environment variables');
@@ -127,8 +128,17 @@ You can also type your message after /feedback and I'll forward it to the develo
   } else if (messageText && messageText.startsWith('/feedback ')) {
     const feedback = messageText.substring(9); // Remove '/feedback '
     bot.sendMessage(chatId, `Thank you for your feedback! I've forwarded your message to the developer.`);
-    // In a real implementation, you would send this feedback to the developer
-    console.log(`Feedback received from ${chatId}: ${feedback}`);
+    
+    // Send feedback to developer if chat ID is configured
+    if (developerChatId) {
+      bot.sendMessage(developerChatId, `📬 New feedback received:
+
+From chat: ${chatId}
+Message: ${feedback}`);
+    } else {
+      console.log(`Feedback received from ${chatId}: ${feedback}`);
+      console.log('Note: DEVELOPER_CHAT_ID not set, feedback not sent to developer.');
+    }
   } else {
     bot.sendMessage(chatId, `I'm Miku Monday Bot! 🎵
 
@@ -183,8 +193,17 @@ You can also type your message after /feedback and I'll forward it to the develo
   } else if (messageText && messageText.startsWith('/feedback ')) {
     const feedback = messageText.substring(9); // Remove '/feedback '
     bot.sendMessage(chatId, `Thank you for your feedback! I've forwarded your message to the developer.`);
-    // In a real implementation, you would send this feedback to the developer
-    console.log(`Feedback received from ${chatId}: ${feedback}`);
+    
+    // Send feedback to developer if chat ID is configured
+    if (developerChatId) {
+      bot.sendMessage(developerChatId, `📬 New feedback received:
+
+From channel: ${chatId}
+Message: ${feedback}`);
+    } else {
+      console.log(`Feedback received from ${chatId}: ${feedback}`);
+      console.log('Note: DEVELOPER_CHAT_ID not set, feedback not sent to developer.');
+    }
   } else {
     bot.sendMessage(chatId, `I'm Miku Monday Bot! 🎵
 

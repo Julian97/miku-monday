@@ -30,6 +30,13 @@ For detailed instructions, see the [User Guide](USER_GUIDE.md).
 - `/countdown` - Show time remaining until next Miku Monday
 - `/feedback` - Send feedback to the developer (@JulianC97)
 
+## Environment Variables
+
+- `TELEGRAM_BOT_TOKEN` - Your Telegram bot token from BotFather
+- `DEVELOPER_CHAT_ID` - (Optional) Chat ID where feedback messages should be sent
+- `MIKU_GIF_PATH` - (Optional) Path to the Miku GIF file (defaults to ./its-miku-monday.gif)
+- `PORT` - (Optional) Port for the web server (defaults to 3000)
+
 ## License
 
 MIT

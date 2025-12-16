@@ -70,6 +70,15 @@ The bot only stores:
 - No personal messages or data are stored
 - All data is automatically deleted if the bot is removed from a channel
 
+## Setting Up Feedback (For Developers)
+
+To receive feedback from users directly in Telegram:
+
+1. Find your personal chat ID by sending a message to your bot and checking the chat ID in the logs
+2. Set the `DEVELOPER_CHAT_ID` environment variable to your chat ID
+3. Users can now send feedback using `/feedback Your message here`
+4. You will receive feedback messages directly in your Telegram
+
 ## Support
 
 If you encounter any issues, contact the bot owner @JulianC97 for assistance.
