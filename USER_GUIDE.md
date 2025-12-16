@@ -12,7 +12,7 @@ This guide explains how to add the Miku Monday Bot to your Telegram channels so 
 ### 1. Find the Bot
 
 1. Open Telegram
-2. Search for the bot by username (provided by the bot owner)
+2. Search for the bot by username (@itsmikumondaybot)
 3. Click on the bot in the search results
 
 ### 2. Start the Bot
@@ -33,6 +33,7 @@ This guide explains how to add the Miku Monday Bot to your Telegram channels so 
    - Post messages
    - Edit messages (optional)
 9. Tap "Save" or "Done"
+10. Send `/start@itsmikumondaybot` to register your channel to the bot
 
 ### 4. Confirm Setup
 
@@ -69,4 +70,4 @@ The bot only stores:
 
 ## Support
 
-If you encounter any issues, contact the bot owner for assistance.
+If you encounter any issues, contact the bot owner @JulianC97 for assistance.

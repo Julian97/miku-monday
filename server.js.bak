@@ -89,21 +89,9 @@ Just add me to your Telegram channels as an administrator and I'll start sending
 
 Current channels subscribed: ${chatIds.size}`);
   } else if (messageText === '/help') {
-    bot.sendMessage(chatId, `I'm Miku Monday Bot! 🎵
-
-Commands:
-/start - Welcome message
-/help - This help message
-/status - Show subscription status
-/countdown - Time until next Miku Monday
-/feedback - Send feedback to the developer
-
-I'll automatically send a Miku GIF every Monday at 12:00 AM to all channels I'm added to.`);
+    bot.sendMessage(chatId, `I'm Miku Monday Bot! 🎵\n\nCommands:\n/start - Welcome message\n/help - This help message\n/status - Show subscription status\n/countdown - Time until next Miku Monday\n/feedback - Send feedback to the developer\n\nI'll automatically send a Miku GIF every Monday at 12:00 AM to all channels I'm added to.`);
   } else if (messageText === '/status') {
-    bot.sendMessage(chatId, `Miku Monday Bot Status:
-- Channels subscribed: ${chatIds.size}
-- Next scheduled post: Monday 12:00 AM
-- GIF file: ${mikuGifPath}`);
+    bot.sendMessage(chatId, `Miku Monday Bot Status:\n- Channels subscribed: ${chatIds.size}\n- Next scheduled post: Monday 12:00 AM\n- GIF file: ${mikuGifPath}`);
   } else if (messageText === '/countdown') {
     const now = new Date();
     const nextMonday = new Date();
@@ -116,8 +104,7 @@ I'll automatically send a Miku GIF every Monday at 12:00 AM to all channels I'm 
     const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
     
-    bot.sendMessage(chatId, `⏰ Countdown to next Miku Monday:
-${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds`);
+    bot.sendMessage(chatId, `⏰ Countdown to next Miku Monday:\n${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds`);
   } else if (messageText === '/feedback') {
     bot.sendMessage(chatId, `📬 Feedback for Miku Monday Bot:
 
@@ -130,12 +117,8 @@ You can also type your message after /feedback and I'll forward it to the develo
     // In a real implementation, you would send this feedback to the developer
     console.log(`Feedback received from ${chatId}: ${feedback}`);
   } else {
-    bot.sendMessage(chatId, `I'm Miku Monday Bot! 🎵
+    bot.sendMessage(chatId, `I'm Miku Monday Bot! 🎵\n\nI'll send a Hatsune Miku GIF every Monday at 12:00 AM.\n\nSend /help for available commands.`);
 
-I'll automatically send a Hatsune Miku GIF every Monday at 12:00 AM to this channel.
-
-Send /help for more information.`);
-  }
 });
 
 // Handle incoming channel posts
@@ -172,8 +155,7 @@ Channels subscribed: ${chatIds.size}`);
     const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
     
-    bot.sendMessage(chatId, `⏰ Countdown to next Miku Monday:
-${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds`);
+    bot.sendMessage(chatId, `⏰ Countdown to next Miku Monday:\n${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds`);
   } else if (messageText === '/feedback') {
     bot.sendMessage(chatId, `📬 Feedback for Miku Monday Bot:
 
@@ -185,13 +167,6 @@ You can also type your message after /feedback and I'll forward it to the develo
     bot.sendMessage(chatId, `Thank you for your feedback! I've forwarded your message to the developer.`);
     // In a real implementation, you would send this feedback to the developer
     console.log(`Feedback received from ${chatId}: ${feedback}`);
-  } else {
-    bot.sendMessage(chatId, `I'm Miku Monday Bot! 🎵
-
-I'll send a Hatsune Miku GIF every Monday at 12:00 AM.
-
-Send /help for available commands.`);
-  }
 });
 
 // Health check endpoint
