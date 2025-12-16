@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Miku Monday Bot - Status</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f0f8ff;
+            color: #333;
+        }
+        .header {
+            text-align: center;
+            color: #4a6fa5;
+            border-bottom: 2px solid #4a6fa5;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .status-card {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .status-indicator {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 10px;
+        }
+        .status-online {
+            background-color: #4CAF50;
+        }
+        .next-post {
+            background-color: #e6f2ff;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .channels-count {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #4a6fa5;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎵 Miku Monday Bot Status 🎵</h1>
+        <p>Current bot status and information</p>
+    </div>
+    
+    <div class="status-card">
+        <h2>Bot Status</h2>
+        <p>
+            <span class="status-indicator status-online"></span>
+            <strong>Online and Running</strong>
+        </p>
+        
+        <div class="next-post">
+            <h3>Next Scheduled Post</h3>
+            <p>Monday at 12:00 AM (Local Time)</p>
+        </div>
+        
+        <div class="channels-count">
+            <p>Channels Subscribed: <span id="channel-count">0</span></p>
+        </div>
+        
+        <p>Current GIF: its-miku-monday.gif</p>
+    </div>
+    
+    <div style="text-align: center; margin-top: 30px;">
+        <p><a href="/">← Back to Home</a></p>
+    </div>
+    
+    <script>
+        // In a real implementation, this would fetch from an API endpoint
+        // For now, we'll simulate with a random number
+        document.addEventListener('DOMContentLoaded', function() {
+            // Simulate fetching channel count
+            const channelCount = Math.floor(Math.random() * 50) + 10;
+            document.getElementById('channel-count').textContent = channelCount;
+            
+            // Update every 5 seconds to simulate real-time updates
+            setInterval(() => {
+                const newCount = Math.floor(Math.random() * 50) + 10;
+                document.getElementById('channel-count').textContent = newCount;
+            }, 5000);
+        });
+    </script>
+</body>
+</html>

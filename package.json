@@ -1,0 +1,30 @@
+{
+  "name": "miku-monday-bot",
+  "version": "1.0.0",
+  "description": "A Telegram bot that posts a Miku GIF every Monday at 12 AM",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test-bot.js",
+    "bot": "node index.js",
+    "webhook": "node webhook-setup.js",
+    "webhook:info": "node webhook-setup.js --info",
+    "webhook:delete": "node webhook-setup.js --delete"
+  },
+  "dependencies": {
+    "axios": "^1.13.2",
+    "body-parser": "^1.20.4",
+    "dotenv": "^17.2.3",
+    "express": "^4.22.1",
+    "node-cron": "^3.0.2",
+    "node-telegram-bot-api": "^0.61.0"
+  },
+  "keywords": [
+    "telegram",
+    "bot",
+    "miku",
+    "scheduled"
+  ],
+  "author": "Miku Monday Developer",
+  "license": "MIT"
+}
