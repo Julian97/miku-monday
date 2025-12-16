@@ -70,6 +70,13 @@ If you're deploying on Zeabur:
 1. Follow the detailed [Zeabur Deployment Guide](ZEABUR_DEPLOYMENT.md)
 2. Once deployed, other users can simply search for your bot by username and add it to their channels
 
+### Deploying to GitHub
+
+To share your code with others or deploy from GitHub:
+1. Follow the [GitHub Deployment Guide](DEPLOY_TO_GITHUB.md)
+2. Push your code to GitHub
+3. Deploy directly from GitHub to Zeabur or other platforms
+
 Make sure to set the environment variables in your deployment platform.
 
 ### For Other Users
