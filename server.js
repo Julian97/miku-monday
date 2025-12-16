@@ -130,6 +130,29 @@ Current channels subscribed: ${chatIds.size}`);
   }
 });
 
+// Handle incoming channel posts
+bot.on('channel_post', (msg) => {
+  console.log('📥 Received channel post:', JSON.stringify(msg, null, 2));
+  
+  const chatId = msg.chat.id;
+  const messageText = msg.text;
+  
+  // Add chat ID to our set
+  chatIds.add(chatId);
+  console.log(`✅ Added channel chat ID: ${chatId}`);
+  console.log(`📊 Total registered chats: ${chatIds.size}`);
+  
+  // For channels, we only need to register the chat ID
+  // The bot will automatically send GIFs to this channel
+  
+  // If it's a command, respond appropriately
+  if (messageText === '/start' || messageText === '/help' || messageText === '/status') {
+    // We can't really respond to channel posts with messages
+    // But we've registered the channel for future GIF sending
+    console.log(`Registered channel ${chatId} for GIF delivery`);
+  }
+});
+
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.status(200).send('Miku Monday Bot is running!');
