@@ -139,12 +139,6 @@ Message: ${feedback}`);
       console.log(`Feedback received from ${chatId}: ${feedback}`);
       console.log('Note: DEVELOPER_CHAT_ID not set, feedback not sent to developer.');
     }
-  } else {
-    bot.sendMessage(chatId, `I'm Miku Monday Bot! 🎵
-
-I'll automatically send a Hatsune Miku GIF every Monday at 12:00 AM to this channel.
-
-Send /help for more information.`);
   }
 });
 
@@ -204,12 +198,6 @@ Message: ${feedback}`);
       console.log(`Feedback received from ${chatId}: ${feedback}`);
       console.log('Note: DEVELOPER_CHAT_ID not set, feedback not sent to developer.');
     }
-  } else {
-    bot.sendMessage(chatId, `I'm Miku Monday Bot! 🎵
-
-I'll send a Hatsune Miku GIF every Monday at 12:00 AM.
-
-Send /help for available commands.`);
   }
 });
 
