@@ -45,7 +45,7 @@ This guide explains how to add the Miku Monday Bot to your Telegram channels so 
 
 - `/start` - Welcome message and instructions
 - `/help` - Show help information
-- `/status` - Show bot status and subscription info
+- `/status` - Show bot status, subscription info, and next scheduled post date
 - `/countdown` - Show time remaining until next Miku Monday
 - `/feedback` - Send feedback to the developer (@JulianC97)
 
