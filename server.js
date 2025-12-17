@@ -25,6 +25,7 @@ if (!token) {
 // Create a bot instance
 const bot = new TelegramBot(token);
 console.log('Bot initialized successfully!');
+console.log('Bot token (first 10 chars):', token.substring(0, 10));
 
 // Store chat IDs to send GIFs to
 let chatIds = new Set();
@@ -271,7 +272,7 @@ app.listen(port, () => {
 
 // Handle errors
 bot.on('polling_error', (error) => {
-  console.error('Polling error:', error.code);
+  console.error('Polling error:', error);
 });
 
 // Handle unhandled promise rejections
