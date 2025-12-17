@@ -65,7 +65,7 @@ Just add me to your Telegram channels as an administrator and I'll start sending
 
 Current channels subscribed: ${chatIds.size}`);
     }
-  } else if (messageText === '/help' || messageText === '/status' || (isChannel && (messageText === '/help' || messageText === '/status'))) {
+  } else if (messageText === '/help' || (isChannel && messageText === '/help')) {
     const nextMonday = getNextMonday();
     const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
     const formattedDate = nextMonday.toLocaleDateString('en-US', options);
@@ -89,6 +89,24 @@ Commands:
 /listchannels - List subscribed channels (dev only)
 
 I'll automatically send a Miku GIF every Monday at 12:00 AM to all channels I'm added to.`);
+    }
+  } else if (messageText === '/status' || (isChannel && messageText === '/status')) {
+    const nextMonday = getNextMonday();
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    const formattedDate = nextMonday.toLocaleDateString('en-US', options);
+    
+    if (isChannel) {
+      bot.sendMessage(chatId, `📊 Miku Monday Bot Status
+
+Channels subscribed: ${chatIds.size}
+Next scheduled post: Monday 12:00 AM (${formattedDate})`);
+    } else {
+      bot.sendMessage(chatId, `📊 Miku Monday Bot Status
+
+Channels subscribed: ${chatIds.size}
+Next scheduled post: Monday 12:00 AM (${formattedDate})
+
+Visit https://your-deployment-url/status for detailed status information.`);
     }
   } else if (messageText === '/countdown') {
     const now = new Date();
