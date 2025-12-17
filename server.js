@@ -31,6 +31,9 @@ console.log('Bot token (first 10 chars):', token.substring(0, 10));
 try {
   bot.startPolling();
   console.log('Bot polling started successfully!');
+  
+  // Test if bot can send messages
+  console.log('Testing bot message sending capability...');
 } catch (error) {
   console.error('Failed to start bot polling:', error);
 }
