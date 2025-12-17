@@ -183,6 +183,7 @@ if (process.env.NODE_ENV === 'development') {
   });
 }
 
+
 // Schedule daily hype messages (runs at 12:00 PM every day)
 cron.schedule('0 12 * * *', () => {
   console.log('Sending daily hype message to all channels...');
