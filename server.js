@@ -51,7 +51,10 @@ function handleCommand(chatId, messageText, isChannel = false) {
   // Add chat ID to our set
   chatIds.add(chatId);
   
-  if (messageText === '/start' || (isChannel && messageText && messageText.startsWith('/start'))) {
+  // Normalize message text by trimming whitespace
+  const normalizedText = messageText ? messageText.trim() : '';
+  
+  if (normalizedText === '/start' || (isChannel && normalizedText && normalizedText.startsWith('/start'))) {
     if (isChannel) {
       // Send a confirmation message to the channel
       bot.sendMessage(chatId, `✅ Miku Monday Bot registered!
@@ -68,7 +71,7 @@ Just add me to your Telegram channels as an administrator and I'll start sending
 
 Current channels subscribed: ${chatIds.size}`);
     }
-  } else if (messageText === '/help' || (isChannel && messageText === '/help')) {
+  } else if (normalizedText === '/help' || (isChannel && normalizedText === '/help')) {
     const nextMonday = getNextMonday();
     const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
     const formattedDate = nextMonday.toLocaleDateString('en-US', options);
@@ -93,7 +96,7 @@ Commands:
 
 I'll automatically send a Miku GIF every Monday at 12:00 AM to all channels I'm added to.`);
     }
-  } else if (messageText === '/status' || (isChannel && messageText === '/status')) {
+  } else if (normalizedText === '/status' || (isChannel && normalizedText === '/status')) {
     const nextMonday = getNextMonday();
     const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
     const formattedDate = nextMonday.toLocaleDateString('en-US', options);
@@ -111,7 +114,7 @@ Next scheduled post: Monday 12:00 AM (${formattedDate})
 
 Visit https://your-deployment-url/status for detailed status information.`);
     }
-  } else if (messageText === '/countdown') {
+  } else if (normalizedText === '/countdown') {
     const now = new Date();
     const nextMonday = new Date();
     nextMonday.setDate(now.getDate() + (1 + 7 - now.getDay()) % 7);
@@ -125,14 +128,14 @@ Visit https://your-deployment-url/status for detailed status information.`);
     
     bot.sendMessage(chatId, `⏰ Countdown to next Miku Monday:
 ${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds`);
-  } else if (messageText === '/feedback') {
+  } else if (normalizedText === '/feedback') {
     bot.sendMessage(chatId, `📬 Feedback for Miku Monday Bot:
 
 Please send your feedback, bug reports, or suggestions to @JulianC97 on Telegram.
 
 You can also type your message after /feedback and I'll forward it to the developer!`);
-  } else if (messageText && messageText.startsWith('/feedback ')) {
-    const feedback = messageText.substring(9); // Remove '/feedback '
+  } else if (normalizedText && normalizedText.startsWith('/feedback ')) {
+    const feedback = normalizedText.substring(9); // Remove '/feedback '
     bot.sendMessage(chatId, `Thank you for your feedback! I've forwarded your message to the developer.`);
     
     // Send feedback to developer if chat ID is configured
@@ -145,7 +148,7 @@ Message: ${feedback}`);
       console.log(`Feedback received from ${chatId}: ${feedback}`);
       console.log('Note: DEVELOPER_CHAT_ID not set, feedback not sent to developer.');
     }
-  } else if (messageText === '/listchannels') {
+  } else if (normalizedText === '/listchannels') {
     // Only allow developer to list channels
     if (developerChatId && chatId.toString() === developerChatId.toString()) {
       // Mask channel IDs for privacy (show only last 4 digits)
