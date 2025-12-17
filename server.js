@@ -1,5 +1,10 @@
 // Web server for handling Telegram webhooks
 require('dotenv').config();
+
+// Generate unique instance ID for debugging multiple instances
+const INSTANCE_ID = `${Math.random().toString(36).substring(2, 15)}-${Date.now()}`;
+console.log(`Starting bot instance: ${INSTANCE_ID}`);
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const TelegramBot = require('node-telegram-bot-api');
@@ -35,7 +40,7 @@ const bot = new TelegramBot(token, {
 
 // Log when bot is ready
 bot.on('polling_start', () => {
-  console.log('=== BOT POLLING STARTED ===');
+  console.log(`=== BOT POLLING STARTED (Instance: ${INSTANCE_ID}) ===`);
   console.log('Bot is now actively polling for messages');
 });
 
@@ -50,14 +55,14 @@ const https = require('https');
 const url = 'https://api.telegram.org';
 
 https.get(url, (res) => {
-  console.log(`Network test - Connected to Telegram API. Status: ${res.statusCode}`);
+  console.log(`Network test (Instance: ${INSTANCE_ID}) - Connected to Telegram API. Status: ${res.statusCode}`);
 }).on('error', (err) => {
-  console.error('Network test - Failed to connect to Telegram API:', err.message);
+  console.error(`Network test (Instance: ${INSTANCE_ID}) - Failed to connect to Telegram API:`, err.message);
 });
 
 // Log polling status periodically
 setInterval(() => {
-  console.log('Bot polling status check...');
+  console.log(`Bot polling status check (Instance: ${INSTANCE_ID})...`);
 }, 30000); // Every 30 seconds
 
 // Store chat IDs to send GIFs to
@@ -304,7 +309,7 @@ Channels subscribed: ${chatIds.size}`;
 
 // Handle incoming messages
 bot.on('message', (msg) => {
-  console.log('=== RECEIVED MESSAGE ===');
+  console.log(`=== RECEIVED MESSAGE (Instance: ${INSTANCE_ID}) ===`);
   console.log('Message timestamp:', new Date().toISOString());
   console.log('Message object:', JSON.stringify(msg, null, 2));
   
@@ -319,7 +324,7 @@ bot.on('message', (msg) => {
 
 // Handle incoming channel posts
 bot.on('channel_post', (msg) => {
-  console.log('=== RECEIVED CHANNEL POST ===');
+  console.log(`=== RECEIVED CHANNEL POST (Instance: ${INSTANCE_ID}) ===`);
   console.log('Channel post timestamp:', new Date().toISOString());
   console.log('Channel post object:', JSON.stringify(msg, null, 2));
   
@@ -343,14 +348,14 @@ app.get('/status', (req, res) => {
 
 // Start the server
 app.listen(port, () => {
-  console.log(`Miku Monday Bot server running on port ${port}`);
+  console.log(`Miku Monday Bot server (Instance: ${INSTANCE_ID}) running on port ${port}`);
   console.log(`Webhook URL: /bot${token}`);
   console.log('Server started successfully!');
 });
 
 // Handle errors
 bot.on('polling_error', (error) => {
-  console.error('=== POLLING ERROR ===');
+  console.error(`=== POLLING ERROR (Instance: ${INSTANCE_ID}) ===`);
   console.error('Timestamp:', new Date().toISOString());
   console.error('Error name:', error.name);
   console.error('Error message:', error.message);
