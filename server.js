@@ -27,6 +27,14 @@ const bot = new TelegramBot(token);
 console.log('Bot initialized successfully!');
 console.log('Bot token (first 10 chars):', token.substring(0, 10));
 
+// Explicitly start polling (in case it's not automatic)
+try {
+  bot.startPolling();
+  console.log('Bot polling started successfully!');
+} catch (error) {
+  console.error('Failed to start bot polling:', error);
+}
+
 // Store chat IDs to send GIFs to
 let chatIds = new Set();
 
