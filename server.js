@@ -162,11 +162,7 @@ Total: ${chatIds.size} channels`);
   // Note: No default response to avoid spamming channels
 }
 
-// Webhook route
-app.post(`/bot${token}`, (req, res) => {
-  bot.processUpdate(req.body);
-  res.sendStatus(200);
-});
+
 
 // Schedule the bot to send the GIF every Monday at 12:00 AM (00:00)
 cron.schedule('0 0 * * 1', () => {
