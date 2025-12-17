@@ -5,6 +5,7 @@ A Telegram bot that automatically posts a Hatsune Miku GIF every Monday at 12:00
 ## Features
 
 - Automatically sends a Miku GIF every Monday at 12:00 AM
+- Sends daily hype messages to build anticipation
 - Works with multiple Telegram channels
 - No technical setup required for end users
 - Completely free and open source

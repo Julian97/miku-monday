@@ -40,6 +40,7 @@ This guide explains how to add the Miku Monday Bot to your Telegram channels so 
 1. The bot should now be added to your channel
 2. You can test it by sending `/status` to the bot in a private chat
 3. The bot will automatically send a Miku GIF every Monday at 12:00 AM
+4. You'll also receive daily hype messages to build anticipation for Miku Monday
 
 ## Bot Commands
 
@@ -48,6 +49,8 @@ This guide explains how to add the Miku Monday Bot to your Telegram channels so 
 - `/status` - Show bot status, subscription info, and next scheduled post date
 - `/countdown` - Show time remaining until next Miku Monday
 - `/feedback` - Send feedback to the developer (@JulianC97)
+
+> **Note:** The bot also sends daily hype messages to build anticipation for Miku Monday!
 
 ## Troubleshooting
 

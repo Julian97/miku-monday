@@ -183,6 +183,40 @@ if (process.env.NODE_ENV === 'development') {
   });
 }
 
+// Schedule daily hype messages (runs at 12:00 PM every day)
+cron.schedule('0 12 * * *', () => {
+  console.log('Sending daily hype message to all channels...');
+  
+  // Calculate days until next Monday
+  const now = new Date();
+  const daysUntilMonday = (8 - now.getDay()) % 7 || 7;
+  
+  // Create hype message
+  let hypeMessage;
+  if (daysUntilMonday === 1) {
+    hypeMessage = `🎉 Tomorrow is Miku Monday! 🎉
+
+Get ready for some Hatsune Miku magic! 🎵
+
+Channels subscribed: ${chatIds.size}`;
+  } else {
+    hypeMessage = `📣 ${daysUntilMonday} days until Miku Monday! 📣
+
+Building hype for the weekly Hatsune Miku celebration! 🎵
+
+Channels subscribed: ${chatIds.size}`;
+  }
+  
+  // Send hype message to all registered chat IDs
+  chatIds.forEach(chatId => {
+    bot.sendMessage(chatId, hypeMessage).then(() => {
+      console.log(`✅ Daily hype message sent successfully to chat ${chatId}!`);
+    }).catch((error) => {
+      console.error(`❌ Error sending daily hype message to chat ${chatId}:`, error.message);
+    });
+  });
+});
+
 // Handle incoming messages
 bot.on('message', (msg) => {
   const chatId = msg.chat.id;
@@ -196,7 +230,6 @@ bot.on('channel_post', (msg) => {
   const chatId = msg.chat.id;
   const messageText = msg.text;
   handleCommand(chatId, messageText, true);
-});
 });
 
 // Health check endpoint
