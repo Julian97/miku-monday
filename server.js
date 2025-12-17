@@ -29,11 +29,16 @@ console.log('Bot token (first 10 chars):', token.substring(0, 10));
 
 // Explicitly start polling (in case it's not automatic)
 try {
-  bot.startPolling();
-  console.log('Bot polling started successfully!');
+  const pollingStarted = bot.startPolling();
+  console.log('Bot polling started successfully!', pollingStarted);
   
   // Test if bot can send messages
   console.log('Testing bot message sending capability...');
+  
+  // Log polling status periodically
+  setInterval(() => {
+    console.log('Bot polling status check...');
+  }, 30000); // Every 30 seconds
 } catch (error) {
   console.error('Failed to start bot polling:', error);
 }
