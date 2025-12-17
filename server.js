@@ -32,6 +32,13 @@ const bot = new TelegramBot(token, {
     timeout: 60000, // 60 seconds timeout
   }
 });
+
+// Log when bot is ready
+bot.on('polling_start', () => {
+  console.log('=== BOT POLLING STARTED ===');
+  console.log('Bot is now actively polling for messages');
+});
+
 console.log('Bot initialized successfully!');
 console.log('Bot token (first 10 chars):', token.substring(0, 10));
 
@@ -73,12 +80,17 @@ app.use(express.static('public'));
 
 // Shared command handler function
 function handleCommand(chatId, messageText, isChannel = false) {
+  console.log('=== HANDLING COMMAND ===');
   console.log(`Handling command: chatId=${chatId}, messageText=${messageText}, isChannel=${isChannel}`);
+  console.log(`Message text type: ${typeof messageText}`);
+  console.log(`Message text value: "${messageText}"`);
+  
   // Add chat ID to our set
   chatIds.add(chatId);
   
   // Normalize message text by trimming whitespace
   const normalizedText = messageText ? messageText.trim() : '';
+  console.log(`Normalized text: "${normalizedText}"`);
   
   if (normalizedText === '/start' || (isChannel && normalizedText && normalizedText.startsWith('/start'))) {
     if (isChannel) {
@@ -87,7 +99,9 @@ function handleCommand(chatId, messageText, isChannel = false) {
 
 I'll send a Hatsune Miku GIF every Monday at 12:00 AM.
 
-Channels subscribed: ${chatIds.size}`);
+Channels subscribed: ${chatIds.size}`).catch((error) => {
+        console.error(`Failed to send message to channel ${chatId}:`, error.message);
+      });
     } else {
       bot.sendMessage(chatId, `Hello! Welcome to Miku Monday Bot! 🎉
 
@@ -95,7 +109,9 @@ I'll automatically send a Hatsune Miku GIF every Monday at 12:00 AM.
 
 Just add me to your Telegram channels as an administrator and I'll start sending GIFs there!
 
-Current channels subscribed: ${chatIds.size}`);
+Current channels subscribed: ${chatIds.size}`).catch((error) => {
+        console.error(`Failed to send message to chat ${chatId}:`, error.message);
+      });
     }
   } else if (normalizedText === '/help' || (isChannel && normalizedText === '/help')) {
     const nextMonday = getNextMonday();
@@ -108,7 +124,9 @@ Current channels subscribed: ${chatIds.size}`);
 I'll send a Hatsune Miku GIF every Monday at 12:00 AM.
 
 Channels subscribed: ${chatIds.size}
-Next scheduled post: Monday 12:00 AM (${formattedDate})`);
+Next scheduled post: Monday 12:00 AM (${formattedDate})`).catch((error) => {
+        console.error(`Failed to send help message to channel ${chatId}:`, error.message);
+      });
     } else {
       bot.sendMessage(chatId, `I'm Miku Monday Bot! 🎵
 
@@ -120,7 +138,9 @@ Commands:
 /feedback - Send feedback to the developer
 /listchannels - List subscribed channels (dev only)
 
-I'll automatically send a Miku GIF every Monday at 12:00 AM to all channels I'm added to.`);
+I'll automatically send a Miku GIF every Monday at 12:00 AM to all channels I'm added to.`).catch((error) => {
+        console.error(`Failed to send help message to chat ${chatId}:`, error.message);
+      });
     }
   } else if (normalizedText === '/status' || (isChannel && normalizedText === '/status')) {
     const nextMonday = getNextMonday();
@@ -131,14 +151,18 @@ I'll automatically send a Miku GIF every Monday at 12:00 AM to all channels I'm 
       bot.sendMessage(chatId, `📊 Miku Monday Bot Status
 
 Channels subscribed: ${chatIds.size}
-Next scheduled post: Monday 12:00 AM (${formattedDate})`);
+Next scheduled post: Monday 12:00 AM (${formattedDate})`).catch((error) => {
+        console.error(`Failed to send status message to channel ${chatId}:`, error.message);
+      });
     } else {
       bot.sendMessage(chatId, `📊 Miku Monday Bot Status
 
 Channels subscribed: ${chatIds.size}
 Next scheduled post: Monday 12:00 AM (${formattedDate})
 
-Visit https://your-deployment-url/status for detailed status information.`);
+Visit https://your-deployment-url/status for detailed status information.`).catch((error) => {
+        console.error(`Failed to send status message to chat ${chatId}:`, error.message);
+      });
     }
   } else if (normalizedText === '/countdown') {
     const now = new Date();
@@ -153,23 +177,31 @@ Visit https://your-deployment-url/status for detailed status information.`);
     const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
     
     bot.sendMessage(chatId, `⏰ Countdown to next Miku Monday:
-${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds`);
+${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds`).catch((error) => {
+      console.error(`Failed to send countdown message to ${isChannel ? 'channel' : 'chat'} ${chatId}:`, error.message);
+    });
   } else if (normalizedText === '/feedback') {
     bot.sendMessage(chatId, `📬 Feedback for Miku Monday Bot:
 
 Please send your feedback, bug reports, or suggestions to @JulianC97 on Telegram.
 
-You can also type your message after /feedback and I'll forward it to the developer!`);
+You can also type your message after /feedback and I'll forward it to the developer!`).catch((error) => {
+      console.error(`Failed to send feedback message to ${isChannel ? 'channel' : 'chat'} ${chatId}:`, error.message);
+    });
   } else if (normalizedText && normalizedText.startsWith('/feedback ')) {
     const feedback = normalizedText.substring(9); // Remove '/feedback '
-    bot.sendMessage(chatId, `Thank you for your feedback! I've forwarded your message to the developer.`);
+    bot.sendMessage(chatId, `Thank you for your feedback! I've forwarded your message to the developer.`).catch((error) => {
+      console.error(`Failed to send feedback confirmation to ${isChannel ? 'channel' : 'chat'} ${chatId}:`, error.message);
+    });
     
     // Send feedback to developer if chat ID is configured
     if (developerChatId) {
       bot.sendMessage(developerChatId, `📬 New feedback received:
 
 From ${isChannel ? 'channel' : 'chat'}: ${chatId}
-Message: ${feedback}`);
+Message: ${feedback}`).catch((error) => {
+        console.error(`Failed to send feedback to developer ${developerChatId}:`, error.message);
+      });
     } else {
       console.log(`Feedback received from ${chatId}: ${feedback}`);
       console.log('Note: DEVELOPER_CHAT_ID not set, feedback not sent to developer.');
@@ -186,9 +218,13 @@ Message: ${feedback}`);
 
 ${channelList}
 
-Total: ${chatIds.size} channels`);
+Total: ${chatIds.size} channels`).catch((error) => {
+        console.error(`Failed to send channel list to developer ${chatId}:`, error.message);
+      });
     } else {
-      bot.sendMessage(chatId, `🔐 This command is restricted to the bot developer only.`);
+      bot.sendMessage(chatId, `🔐 This command is restricted to the bot developer only.`).catch((error) => {
+        console.error(`Failed to send restricted access message to ${chatId}:`, error.message);
+      });
     }
   }
   // Note: No default response to avoid spamming channels
@@ -268,19 +304,31 @@ Channels subscribed: ${chatIds.size}`;
 
 // Handle incoming messages
 bot.on('message', (msg) => {
-  console.log('Received message:', msg);
+  console.log('=== RECEIVED MESSAGE ===');
+  console.log('Message timestamp:', new Date().toISOString());
+  console.log('Message object:', JSON.stringify(msg, null, 2));
+  
   const chatId = msg.chat.id;
   const messageText = msg.text;
+  
+  console.log(`Processing message: chatId=${chatId}, messageText=${messageText}`);
   handleCommand(chatId, messageText, false);
+  console.log('Finished processing message');
 });
 
 
 // Handle incoming channel posts
 bot.on('channel_post', (msg) => {
-  console.log('Received channel post:', msg);
+  console.log('=== RECEIVED CHANNEL POST ===');
+  console.log('Channel post timestamp:', new Date().toISOString());
+  console.log('Channel post object:', JSON.stringify(msg, null, 2));
+  
   const chatId = msg.chat.id;
   const messageText = msg.text;
+  
+  console.log(`Processing channel post: chatId=${chatId}, messageText=${messageText}`);
   handleCommand(chatId, messageText, true);
+  console.log('Finished processing channel post');
 });
 
 // Health check endpoint
