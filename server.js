@@ -22,7 +22,7 @@ if (!token) {
   process.exit(1);
 }
 
-// Create a bot instance that uses webhooks
+// Create a bot instance
 const bot = new TelegramBot(token);
 
 // Store chat IDs to send GIFs to
@@ -272,6 +272,19 @@ app.listen(port, () => {
 // Handle errors
 bot.on('polling_error', (error) => {
   console.error('Polling error:', error.code);
+});
+
+// Handle unhandled promise rejections
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  // Application specific logging, throwing an error, or other logic here
+});
+
+// Handle uncaught exceptions
+process.on('uncaughtException', (error) => {
+  console.error('Uncaught Exception:', error);
+  // Close DB connections, flush logs, etc.
+  process.exit(1);
 });
 
 module.exports = app;
