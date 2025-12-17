@@ -285,6 +285,7 @@ app.listen(port, () => {
 // Handle errors
 bot.on('polling_error', (error) => {
   console.error('Polling error:', error);
+  console.error('Polling error details:', JSON.stringify(error, null, 2));
 });
 
 // Handle unhandled promise rejections
