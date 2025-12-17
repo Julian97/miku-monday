@@ -184,7 +184,8 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 
-// Schedule daily hype messages (runs at 12:00 PM every day)
+// TEMPORARILY DISABLED: Schedule daily hype messages (runs at 12:00 PM every day)
+/*
 cron.schedule('0 12 * * *', () => {
   console.log('Sending daily hype message to all channels...');
   
@@ -217,6 +218,7 @@ Channels subscribed: ${chatIds.size}`;
     });
   });
 });
+*/
 
 // Handle incoming messages
 bot.on('message', (msg) => {
