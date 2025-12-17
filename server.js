@@ -22,26 +22,36 @@ if (!token) {
   process.exit(1);
 }
 
-// Create a bot instance
-const bot = new TelegramBot(token);
+// Create a bot instance with additional options for better reliability
+const bot = new TelegramBot(token, {
+  polling: true,
+  retryTimeout: 10000, // 10 seconds retry timeout
+  restartDelay: 5000, // 5 seconds delay before restart
+  request: {
+    proxy: process.env.HTTP_PROXY || process.env.HTTPS_PROXY,
+    timeout: 60000, // 60 seconds timeout
+  }
+});
 console.log('Bot initialized successfully!');
 console.log('Bot token (first 10 chars):', token.substring(0, 10));
 
-// Explicitly start polling (in case it's not automatic)
-try {
-  const pollingStarted = bot.startPolling();
-  console.log('Bot polling started successfully!', pollingStarted);
-  
-  // Test if bot can send messages
-  console.log('Testing bot message sending capability...');
-  
-  // Log polling status periodically
-  setInterval(() => {
-    console.log('Bot polling status check...');
-  }, 30000); // Every 30 seconds
-} catch (error) {
-  console.error('Failed to start bot polling:', error);
-}
+// Test if bot can send messages
+console.log('Testing bot message sending capability...');
+
+// Test network connectivity to Telegram
+const https = require('https');
+const url = 'https://api.telegram.org';
+
+https.get(url, (res) => {
+  console.log(`Network test - Connected to Telegram API. Status: ${res.statusCode}`);
+}).on('error', (err) => {
+  console.error('Network test - Failed to connect to Telegram API:', err.message);
+});
+
+// Log polling status periodically
+setInterval(() => {
+  console.log('Bot polling status check...');
+}, 30000); // Every 30 seconds
 
 // Store chat IDs to send GIFs to
 let chatIds = new Set();
@@ -292,8 +302,24 @@ app.listen(port, () => {
 
 // Handle errors
 bot.on('polling_error', (error) => {
-  console.error('Polling error:', error);
-  console.error('Polling error details:', JSON.stringify(error, null, 2));
+  console.error('=== POLLING ERROR ===');
+  console.error('Timestamp:', new Date().toISOString());
+  console.error('Error name:', error.name);
+  console.error('Error message:', error.message);
+  console.error('Error code:', error.code);
+  
+  // If it's a request error, provide more details
+  if (error.response) {
+    console.error('Response status:', error.response.statusCode);
+    console.error('Response body:', error.response.body);
+  }
+  
+  if (error.options) {
+    console.error('Request options:', JSON.stringify(error.options, null, 2));
+  }
+  
+  console.error('Full error object:', JSON.stringify(error, Object.getOwnPropertyNames(error), 2));
+  console.error('====================');
 });
 
 // Handle unhandled promise rejections
