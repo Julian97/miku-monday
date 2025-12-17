@@ -24,6 +24,7 @@ if (!token) {
 
 // Create a bot instance
 const bot = new TelegramBot(token);
+console.log('Bot initialized successfully!');
 
 // Store chat IDs to send GIFs to
 let chatIds = new Set();
@@ -236,6 +237,7 @@ Channels subscribed: ${chatIds.size}`;
 
 // Handle incoming messages
 bot.on('message', (msg) => {
+  console.log('Received message:', msg);
   const chatId = msg.chat.id;
   const messageText = msg.text;
   handleCommand(chatId, messageText, false);
@@ -244,6 +246,7 @@ bot.on('message', (msg) => {
 
 // Handle incoming channel posts
 bot.on('channel_post', (msg) => {
+  console.log('Received channel post:', msg);
   const chatId = msg.chat.id;
   const messageText = msg.text;
   handleCommand(chatId, messageText, true);
@@ -263,6 +266,7 @@ app.get('/status', (req, res) => {
 app.listen(port, () => {
   console.log(`Miku Monday Bot server running on port ${port}`);
   console.log(`Webhook URL: /bot${token}`);
+  console.log('Server started successfully!');
 });
 
 // Handle errors
