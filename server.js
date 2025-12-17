@@ -47,6 +47,7 @@ app.use(express.static('public'));
 
 // Shared command handler function
 function handleCommand(chatId, messageText, isChannel = false) {
+  console.log(`Handling command: chatId=${chatId}, messageText=${messageText}, isChannel=${isChannel}`);
   // Add chat ID to our set
   chatIds.add(chatId);
   
