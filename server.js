@@ -11,6 +11,7 @@ const TelegramBot = require('node-telegram-bot-api');
 const cron = require('node-cron');
 const path = require('path');
 const fs = require('fs');
+const crypto = require('crypto');
 
 // Create Express app
 const app = express();
@@ -74,19 +75,44 @@ let chatIds = new Set();
 // File to persist chat IDs
 const CHAT_IDS_FILE = 'chat_ids.json';
 
+// Encryption key (in production, this should come from environment variables)
+const ENCRYPTION_KEY = process.env.CHAT_IDS_ENCRYPTION_KEY || 'default-key-change-in-production';
+const IV_LENGTH = 16; // For AES, this is always 16
+
+// Encrypt data
+function encrypt(text) {
+  const iv = crypto.randomBytes(IV_LENGTH);
+  const cipher = crypto.createCipher('aes-256-cbc', ENCRYPTION_KEY);
+  let encrypted = cipher.update(text, 'utf8', 'hex');
+  encrypted += cipher.final('hex');
+  return iv.toString('hex') + ':' + encrypted;
+}
+
+// Decrypt data
+function decrypt(text) {
+  const textParts = text.split(':');
+  const iv = Buffer.from(textParts.shift(), 'hex');
+  const encryptedText = textParts.join(':');
+  const decipher = crypto.createDecipher('aes-256-cbc', ENCRYPTION_KEY);
+  let decrypted = decipher.update(encryptedText, 'hex', 'utf8');
+  decrypted += decipher.final('utf8');
+  return decrypted;
+}
+
 // Load chat IDs from file
 function loadChatIds() {
   try {
     if (fs.existsSync(CHAT_IDS_FILE)) {
-      const data = fs.readFileSync(CHAT_IDS_FILE, 'utf8');
-      const ids = JSON.parse(data);
+      const encryptedData = fs.readFileSync(CHAT_IDS_FILE, 'utf8');
+      const decryptedData = decrypt(encryptedData);
+      const ids = JSON.parse(decryptedData);
       chatIds = new Set(ids);
-      console.log(`Loaded ${chatIds.size} chat IDs from file`);
+      console.log(`Loaded ${chatIds.size} chat IDs from encrypted file`);
     } else {
       console.log('No existing chat IDs file found, starting with empty set');
     }
   } catch (error) {
-    console.error('Error loading chat IDs from file:', error);
+    console.error('Error loading chat IDs from encrypted file:', error);
     chatIds = new Set(); // Reset to empty set on error
   }
 }
@@ -95,10 +121,12 @@ function loadChatIds() {
 function saveChatIds() {
   try {
     const idsArray = Array.from(chatIds);
-    fs.writeFileSync(CHAT_IDS_FILE, JSON.stringify(idsArray, null, 2));
-    console.log(`Saved ${chatIds.size} chat IDs to file`);
+    const jsonData = JSON.stringify(idsArray, null, 2);
+    const encryptedData = encrypt(jsonData);
+    fs.writeFileSync(CHAT_IDS_FILE, encryptedData);
+    console.log(`Saved ${chatIds.size} chat IDs to encrypted file`);
   } catch (error) {
-    console.error('Error saving chat IDs to file:', error);
+    console.error('Error saving chat IDs to encrypted file:', error);
   }
 }
 

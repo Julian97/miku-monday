@@ -82,6 +82,14 @@ To receive feedback from users directly in Telegram:
 3. Users can now send feedback using `/feedback Your message here`
 4. You will receive feedback messages directly in your Telegram
 
+## Security Configuration (For Developers)
+
+To enhance security and privacy:
+
+1. Set the `CHAT_IDS_ENCRYPTION_KEY` environment variable to a strong encryption key
+2. This will encrypt the stored chat IDs to protect user privacy
+3. If not set, a default key will be used (not recommended for production)
+
 ## Support
 
 If you encounter any issues, contact the bot owner @JulianC97 for assistance.

@@ -42,6 +42,7 @@ For detailed instructions, see the [User Guide](USER_GUIDE.md).
 - `DEVELOPER_CHAT_ID` - (Optional) Chat ID where feedback messages should be sent
 - `MIKU_GIF_PATH` - (Optional) Path to the Miku GIF file (defaults to ./its-miku-monday.gif)
 - `PORT` - (Optional) Port for the web server (defaults to 3000)
+- `CHAT_IDS_ENCRYPTION_KEY` - (Optional) Encryption key for chat IDs storage (defaults to a default key for development)
 
 ## Technical Implementation
 
