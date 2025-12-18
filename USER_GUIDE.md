@@ -61,7 +61,7 @@ The `/listchannels` command is restricted to the bot developer only and returns 
 
 The bot supports persistent storage of subscribed channels across deployments:
 
-1. **Redis Storage** (recommended): If a `REDIS_URL` environment variable is provided, chat IDs are stored in Redis with encryption
+1. **Redis Storage** (recommended): If a `REDIS_CONNECTION_STRING` environment variable is provided, chat IDs are stored in Redis with encryption
 2. **File Storage** (fallback): If Redis is not available, chat IDs are stored in an encrypted `chat_ids.json` file
 
 This ensures that your channel subscriptions are maintained even when the bot is restarted or redeployed.

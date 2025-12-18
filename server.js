@@ -44,13 +44,13 @@ const bot = new TelegramBot(token, {
 
 // Redis client
 let redisClient = null;
-const REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6379';
+const REDIS_URL = process.env.REDIS_CONNECTION_STRING || 'redis://localhost:6379';
 const CHAT_IDS_KEY = 'miku_monday:chat_ids';
 
 // Initialize Redis client
 async function initRedis() {
   try {
-    if (process.env.REDIS_URL) {
+    if (process.env.REDIS_CONNECTION_STRING) {
       redisClient = redis.createClient({
         url: REDIS_URL
       });
@@ -62,7 +62,7 @@ async function initRedis() {
       await redisClient.connect();
       console.log(`Connected to Redis at ${REDIS_URL}`);
     } else {
-      console.log('No REDIS_URL provided, using file-based storage');
+      console.log('No REDIS_CONNECTION_STRING provided, using file-based storage');
     }
   } catch (error) {
     console.error(`Failed to connect to Redis (Instance: ${INSTANCE_ID}):`, error);
