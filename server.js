@@ -304,7 +304,7 @@ Channels subscribed: ${chatIds.size}`).catch((error) => {
       bot.sendMessage(chatId, `🤖 Miku Monday Bot Help 🤖
 
 I automatically send a Hatsune Miku GIF every Monday at 8:00 AM Singapore Time (12:00 AM UTC) to all channels I'm added to.
-I also send daily hype messages at 8:00 AM Singapore Time to build anticipation for Miku Monday!
+I also send daily hype messages at 8:00 AM Singapore Time with day-specific content to build anticipation for Miku Monday!
 
 Available Commands:
 /start - Register this channel/chat with the bot
@@ -481,25 +481,45 @@ if (process.env.NODE_ENV === 'development') {
 cron.schedule('0 8 * * *', () => {
   console.log('Sending daily hype message to all channels...');
   
-  // Calculate days until next Monday
+  // Get current day of week (0 = Sunday, 1 = Monday, etc.)
   const now = new Date();
-  const daysUntilMonday = (8 - now.getDay()) % 7 || 7;
+  const dayOfWeek = now.getDay();
   
-  // Create hype message
-  let hypeMessage;
-  if (daysUntilMonday === 1) {
-    hypeMessage = `🎉 Tomorrow is Miku Monday! 🎉
+  // Create day-specific hype messages
+  const hypeMessages = [
+    `🎵 Sunday Hype! 🎵
 
-Get ready for some Hatsune Miku magic! 🎵
+Rest, reflect, and prepare the next melody. 
+Tomorrow is Miku Monday!`,
+    `🎉 IT'S MIKU MONDAY! 🎉
+
+New week, new track—press play.`,
+    `🔥 Tuesday Momentum 🔥
+
+Momentum builds; keep the tempo steady. 
+6 more days to Miku Monday.`,
+    `🎼 Wednesday Rhythm 🎼
+
+Halfway there—your rhythm is holding strong. 
+5 more days to Miku Monday.`,
+    `🎯 Thursday Focus 🎯
+
+Fine-tune the details; clarity creates impact. 
+4 more days to Miku Monday.`,
+    `✨ Friday Finish ✨
+
+Finish with confidence; let the chorus hit. 
+3 more days to Miku Monday.`,
+    `🎸 Saturday Freedom 🎸
+
+Create freely—no schedule, just sound. 
+2 more days to Miku Monday.`
+  ];
+  
+  // Get the appropriate message for today
+  const hypeMessage = `${hypeMessages[dayOfWeek]}
 
 Channels subscribed: ${chatIds.size}`;
-  } else {
-    hypeMessage = `📣 ${daysUntilMonday} days until Miku Monday! 📣
-
-Building hype for the weekly Hatsune Miku celebration! 🎵
-
-Channels subscribed: ${chatIds.size}`;
-  }
   
   // Send hype message to all registered chat IDs
   chatIds.forEach(chatId => {
@@ -557,7 +577,7 @@ app.get('/api/status', (req, res) => {
       online: true,
       channelCount: chatIds.size,
       nextPost: 'Monday at 8:00 AM (Singapore Time)',
-      dailyHype: '8:00 AM (Singapore Time)',
+      dailyHype: '8:00 AM (Singapore Time) with day-specific content',
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       timestamp: new Date().toISOString()
     };
