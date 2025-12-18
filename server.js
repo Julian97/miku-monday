@@ -435,8 +435,9 @@ app.get('/api/status', (req, res) => {
     const statusData = {
       online: true,
       channelCount: chatIds.size,
-      nextPost: 'Monday at 12:00 AM (Local Time)',
-      dailyHype: '12:00 PM (Local Time)',
+      nextPost: 'Monday at 12:00 AM (Singapore Time)',
+      dailyHype: '12:00 PM (Singapore Time)',
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       timestamp: new Date().toISOString()
     };
     
