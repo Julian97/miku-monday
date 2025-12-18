@@ -10,6 +10,7 @@ const bodyParser = require('body-parser');
 const TelegramBot = require('node-telegram-bot-api');
 const cron = require('node-cron');
 const path = require('path');
+const fs = require('fs');
 
 // Create Express app
 const app = express();
@@ -63,10 +64,46 @@ https.get(url, (res) => {
 // Log polling status periodically
 setInterval(() => {
   console.log(`Bot polling status check (Instance: ${INSTANCE_ID})...`);
+  // Periodically save chat IDs to ensure persistence
+  saveChatIds();
 }, 30000); // Every 30 seconds
 
 // Store chat IDs to send GIFs to
 let chatIds = new Set();
+
+// File to persist chat IDs
+const CHAT_IDS_FILE = 'chat_ids.json';
+
+// Load chat IDs from file
+function loadChatIds() {
+  try {
+    if (fs.existsSync(CHAT_IDS_FILE)) {
+      const data = fs.readFileSync(CHAT_IDS_FILE, 'utf8');
+      const ids = JSON.parse(data);
+      chatIds = new Set(ids);
+      console.log(`Loaded ${chatIds.size} chat IDs from file`);
+    } else {
+      console.log('No existing chat IDs file found, starting with empty set');
+    }
+  } catch (error) {
+    console.error('Error loading chat IDs from file:', error);
+    chatIds = new Set(); // Reset to empty set on error
+  }
+}
+
+// Save chat IDs to file
+function saveChatIds() {
+  try {
+    const idsArray = Array.from(chatIds);
+    fs.writeFileSync(CHAT_IDS_FILE, JSON.stringify(idsArray, null, 2));
+    console.log(`Saved ${chatIds.size} chat IDs to file`);
+  } catch (error) {
+    console.error('Error saving chat IDs to file:', error);
+  }
+}
+
+// Load chat IDs on startup
+loadChatIds();
 
 // Path to the Miku GIF
 const mikuGifPath = process.env.MIKU_GIF_PATH || './its-miku-monday.gif';
@@ -91,7 +128,14 @@ function handleCommand(chatId, messageText, isChannel = false) {
   console.log(`Message text value: "${messageText}"`);
   
   // Add chat ID to our set
+  const sizeBefore = chatIds.size;
   chatIds.add(chatId);
+  
+  // Save chat IDs if we added a new one
+  if (chatIds.size > sizeBefore) {
+    saveChatIds();
+    console.log(`New chat ID added and saved: ${chatId}`);
+  }
   
   // Normalize message text by trimming whitespace
   const normalizedText = messageText ? messageText.trim() : '';
