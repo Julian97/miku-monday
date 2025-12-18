@@ -346,6 +346,25 @@ app.get('/status', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'status.html'));
 });
 
+// API endpoint for status data
+app.get('/api/status', (req, res) => {
+  try {
+    const statusData = {
+      online: true,
+      channelCount: chatIds.size,
+      nextPost: 'Monday at 12:00 AM (Local Time)',
+      dailyHype: '12:00 PM (Local Time)',
+      timestamp: new Date().toISOString()
+    };
+    
+    res.json(statusData);
+  } catch (error) {
+    console.error('Error fetching status data:', error);
+    res.status(500).json({ error: 'Failed to fetch status data' });
+  }
+});
+});
+
 // Start the server
 app.listen(port, () => {
   console.log(`Miku Monday Bot server (Instance: ${INSTANCE_ID}) running on port ${port}`);

@@ -85,18 +85,26 @@
     </div>
     
     <script>
-        // In a real implementation, this would fetch from an API endpoint
-        // For now, we'll simulate with a random number
         document.addEventListener('DOMContentLoaded', function() {
-            // Simulate fetching channel count
-            const channelCount = Math.floor(Math.random() * 50) + 10;
-            document.getElementById('channel-count').textContent = channelCount;
+            // Fetch real data from API endpoint
+            function updateStatus() {
+                fetch('/api/status')
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('channel-count').textContent = data.channelCount;
+                    })
+                    .catch(error => {
+                        console.error('Error fetching status:', error);
+                        // Fallback to simulated data if API fails
+                        document.getElementById('channel-count').textContent = Math.floor(Math.random() * 50) + 10;
+                    });
+            }
             
-            // Update every 5 seconds to simulate real-time updates
-            setInterval(() => {
-                const newCount = Math.floor(Math.random() * 50) + 10;
-                document.getElementById('channel-count').textContent = newCount;
-            }, 5000);
+            // Initial load
+            updateStatus();
+            
+            // Update every 30 seconds
+            setInterval(updateStatus, 30000);
         });
     </script>
 </body>
