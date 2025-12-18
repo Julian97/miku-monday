@@ -2,6 +2,16 @@
 
 This guide explains how to add the Miku Monday Bot to your Telegram channels so you can receive weekly Miku GIFs.
 
+## Why Miku Monday?
+
+Miku Monday is a celebration of Hatsune Miku, the world's most famous Vocaloid character! Every Monday, we share a special Miku GIF to brighten your week and connect you with fellow Miku fans around the world.
+
+Our bot brings joy, creativity, and community to your channels with:
+- Weekly Miku GIFs to start the week with positivity
+- Daily hype messages to build anticipation
+- No technical setup required
+- Completely free service
+
 ## Prerequisites
 
 - A Telegram account
@@ -39,8 +49,8 @@ This guide explains how to add the Miku Monday Bot to your Telegram channels so 
 
 1. The bot should now be added to your channel
 2. You can test it by sending `/status` to the bot in a private chat
-3. The bot will automatically send a Miku GIF every Monday at 12:00 AM
-4. You'll also receive daily hype messages to build anticipation for Miku Monday
+3. The bot will automatically send a Miku GIF every Monday at 12:00 AM UTC (8:00 AM Singapore Time)
+4. You'll also receive daily hype messages at 8:00 AM Singapore Time to build anticipation for Miku Monday
 
 ## Bot Commands
 
@@ -48,10 +58,21 @@ This guide explains how to add the Miku Monday Bot to your Telegram channels so 
 - `/help` - Show help information
 - `/status` - Show bot status, subscription info, and next scheduled post date
 - `/countdown` - Show time remaining until next Miku Monday
+- `/unsubscribe` - Remove this channel from bot subscriptions
 - `/feedback` - Send feedback to the developer (@JulianC97)
-- `/listchannels` - Developer-only command for managing subscriptions (privacy protected)
 
-> **Note:** The bot also sends daily hype messages to build anticipation for Miku Monday!
+> **Note:** The bot also sends daily hype messages at 8:00 AM Singapore Time to build anticipation for Miku Monday!
+
+## Managing Your Subscription
+
+### Unsubscribing a Channel
+
+If you want to remove the bot from a channel:
+1. Send `/unsubscribe` command in the channel
+2. The bot will confirm removal and stop sending messages to that channel
+3. To resubscribe later, simply send `/start@itsmikumondaybot` again
+
+> **Note:** You can only unsubscribe channels, not private chats. To remove the bot from a channel completely, you'll need to remove it as an administrator in your channel settings.
 
 ## Privacy Protection
 
@@ -91,33 +112,23 @@ The bot only stores:
 - No personal messages or data are stored
 - All data is automatically deleted if the bot is removed from a channel
 
-## Setting Up Feedback (For Developers)
+## Marketing and Community
 
-To receive feedback from users directly in Telegram:
+### Spread the Joy!
 
-1. Find your personal chat ID by sending a message to your bot and checking the chat ID in the logs
-2. Set the `DEVELOPER_CHAT_ID` environment variable to your chat ID
-3. Users can now send feedback using `/feedback Your message here`
-4. You will receive feedback messages directly in your Telegram
+Love Miku Monday? Help us spread the word:
+- Share your favorite Miku Monday GIFs with friends
+- Tell other channel admins about the bot
+- Mention @itsmikumondaybot in your social media posts
+- Join the global Miku Monday community!
 
-## Security Configuration (For Developers)
+### Community Guidelines
 
-To enhance security and privacy:
-
-1. Set the `CHAT_IDS_ENCRYPTION_KEY` environment variable to a strong encryption key
-2. This will encrypt the stored chat IDs to protect user privacy
-3. If not set, a default key will be used (not recommended for production)
-
-## Environment Configuration
-
-For local development, copy `.env.example` to `.env` and configure your environment variables:
-
-```bash
-cp .env.example .env
-# Then edit .env with your actual values
-```
-
-In production environments (like Zeabur), set these variables in your deployment platform's environment settings rather than using a .env file.
+We believe in creating a positive, inclusive space for all Miku fans:
+- Keep discussions respectful and friendly
+- Share your love for Miku and Vocaloid music
+- Be welcoming to newcomers
+- Report any inappropriate content to the bot developer
 
 ## Support
 
