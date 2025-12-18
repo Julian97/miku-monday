@@ -42,6 +42,8 @@ const bot = new TelegramBot(token, {
   }
 });
 
+console.log('Bot instance created with polling enabled');
+
 // Redis client
 let redisClient = null;
 const REDIS_URL = process.env.REDIS_CONNECTION_STRING || 'redis://localhost:6379';
@@ -84,14 +86,27 @@ async function initRedis() {
 process.on('SIGTERM', async () => {
   console.log('SIGTERM received, stopping bot...');
   try {
+    // Increase timeout for shutdown operations
+    const shutdownTimeout = setTimeout(() => {
+      console.log('Shutdown timeout reached, forcing exit...');
+      process.exit(1);
+    }, 10000); // 10 second timeout
+    
     if (bot) {
+      console.log('Stopping bot polling...');
       await bot.stopPolling();
       console.log('Bot polling stopped');
     }
+    
     if (redisClient) {
+      console.log('Disconnecting Redis client...');
       await redisClient.quit();
       console.log('Redis client disconnected');
     }
+    
+    // Clear the timeout since we completed successfully
+    clearTimeout(shutdownTimeout);
+    console.log('Graceful shutdown completed');
   } catch (error) {
     console.error('Error during shutdown:', error);
   }
@@ -101,18 +116,36 @@ process.on('SIGTERM', async () => {
 process.on('SIGINT', async () => {
   console.log('SIGINT received, stopping bot...');
   try {
+    // Increase timeout for shutdown operations
+    const shutdownTimeout = setTimeout(() => {
+      console.log('Shutdown timeout reached, forcing exit...');
+      process.exit(1);
+    }, 10000); // 10 second timeout
+    
     if (bot) {
+      console.log('Stopping bot polling...');
       await bot.stopPolling();
       console.log('Bot polling stopped');
     }
+    
     if (redisClient) {
+      console.log('Disconnecting Redis client...');
       await redisClient.quit();
       console.log('Redis client disconnected');
     }
+    
+    // Clear the timeout since we completed successfully
+    clearTimeout(shutdownTimeout);
+    console.log('Graceful shutdown completed');
   } catch (error) {
     console.error('Error during shutdown:', error);
   }
   process.exit(0);
+});
+
+// Additional cleanup on exit
+process.on('exit', () => {
+  console.log('Process exiting, final cleanup...');
 });
 
 // Log polling status periodically
@@ -230,6 +263,7 @@ async function saveChatIds() {
 initRedis().then(async () => {
   // Clear webhook to prevent 409 conflicts
   try {
+    console.log('Attempting to clear webhook...');
     await bot.deleteWebHook();
     console.log('Webhook cleared, starting polling...');
   } catch (err) {
