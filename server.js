@@ -54,6 +54,8 @@ const CHAT_IDS_KEY = 'miku_monday:chat_ids';
 async function initRedis() {
   try {
     if (process.env.REDIS_CONNECTION_STRING) {
+      console.log('Initializing Redis client...');
+      
       // Build Redis configuration with optional password
       const redisConfig = {
         url: REDIS_URL
@@ -71,13 +73,21 @@ async function initRedis() {
         console.error(`Redis Client Error (Instance: ${INSTANCE_ID}):`, err);
       });
       
+      redisClient.on('connect', () => {
+        console.log('Redis client connected successfully');
+      });
+      
+      redisClient.on('ready', () => {
+        console.log('Redis client ready for operations');
+      });
+      
       await redisClient.connect();
-      console.log(`Connected to Redis at ${REDIS_URL}${REDIS_PASSWORD ? ' with authentication' : ''}`);
+      console.log(`✅ Connected to Redis at ${REDIS_URL}${REDIS_PASSWORD ? ' with authentication' : ''}`);
     } else {
       console.log('No REDIS_CONNECTION_STRING provided, using file-based storage');
     }
   } catch (error) {
-    console.error(`Failed to connect to Redis (Instance: ${INSTANCE_ID}):`, error);
+    console.error(`❌ Failed to connect to Redis (Instance: ${INSTANCE_ID}):`, error);
     redisClient = null;
   }
 }
@@ -150,9 +160,20 @@ process.on('exit', () => {
 
 // Log polling status periodically
 setInterval(async () => {
-  console.log(`Bot polling status check (Instance: ${INSTANCE_ID})...`);
+  console.log(`🔍 Bot polling status check (Instance: ${INSTANCE_ID})...`);
+  
   // Periodically save chat IDs to ensure persistence
   await saveChatIds();
+  
+  // Check Redis health if available
+  if (redisClient && redisClient.isOpen) {
+    try {
+      const pingResult = await redisClient.ping();
+      console.log(`✅ Redis health check passed (Ping: ${pingResult})`);
+    } catch (error) {
+      console.error(`❌ Redis health check failed:`, error.message);
+    }
+  }
 }, 30000); // Every 30 seconds
 
 // Store chat IDs to send GIFs to
@@ -194,28 +215,31 @@ async function loadChatIds() {
     // Try Redis first if available
     if (redisClient) {
       try {
+        console.log('Attempting to load chat IDs from Redis...');
         const encryptedData = await redisClient.get(CHAT_IDS_KEY);
         if (encryptedData) {
+          console.log('Found chat IDs in Redis, decrypting...');
           const decryptedData = decrypt(encryptedData);
           const ids = JSON.parse(decryptedData);
           chatIds = new Set(ids);
-          console.log(`Loaded ${chatIds.size} chat IDs from Redis`);
+          console.log(`✅ Loaded ${chatIds.size} chat IDs from Redis successfully`);
           return;
         } else {
           console.log('No existing chat IDs found in Redis, starting with empty set');
         }
       } catch (redisError) {
-        console.error('Error loading chat IDs from Redis:', redisError);
+        console.error('❌ Error loading chat IDs from Redis:', redisError);
       }
     }
     
     // Fallback to file-based storage
     if (fs.existsSync(CHAT_IDS_FILE)) {
+      console.log('Loading chat IDs from encrypted file...');
       const encryptedData = fs.readFileSync(CHAT_IDS_FILE, 'utf8');
       const decryptedData = decrypt(encryptedData);
       const ids = JSON.parse(decryptedData);
       chatIds = new Set(ids);
-      console.log(`Loaded ${chatIds.size} chat IDs from encrypted file`);
+      console.log(`✅ Loaded ${chatIds.size} chat IDs from encrypted file`);
     } else {
       console.log('No existing chat IDs file found, starting with empty set');
       // Create an empty chat IDs file
@@ -240,22 +264,26 @@ async function saveChatIds() {
     const jsonData = JSON.stringify(idsArray, null, 2);
     const encryptedData = encrypt(jsonData);
     
+    console.log(`Saving ${chatIds.size} chat IDs...`);
+    
     // Try Redis first if available
     if (redisClient) {
       try {
+        console.log('Saving chat IDs to Redis...');
         await redisClient.set(CHAT_IDS_KEY, encryptedData);
-        console.log(`Saved ${chatIds.size} chat IDs to Redis`);
+        console.log(`✅ Saved ${chatIds.size} chat IDs to Redis successfully`);
         return;
       } catch (redisError) {
-        console.error('Error saving chat IDs to Redis:', redisError);
+        console.error('❌ Error saving chat IDs to Redis:', redisError);
       }
     }
     
     // Fallback to file-based storage
+    console.log('Saving chat IDs to encrypted file...');
     fs.writeFileSync(CHAT_IDS_FILE, encryptedData);
-    console.log(`Saved ${chatIds.size} chat IDs to encrypted file`);
+    console.log(`✅ Saved ${chatIds.size} chat IDs to encrypted file successfully`);
   } catch (error) {
-    console.error('Error saving chat IDs to encrypted file:', error);
+    console.error('❌ Error saving chat IDs to encrypted file:', error);
   }
 }
 
@@ -301,8 +329,11 @@ async function handleCommand(chatId, messageText, isChannel = false) {
   
   // Save chat IDs if we added a new one
   if (chatIds.size > sizeBefore) {
+    console.log(`🆕 New chat ID registered: ${chatId} (Total: ${chatIds.size})`);
     await saveChatIds();
-    console.log(`New chat ID added and saved: ${chatId}`);
+    console.log(`💾 Chat ID ${chatId} saved successfully`);
+  } else {
+    console.log(`🔄 Existing chat ID detected: ${chatId} (Total: ${chatIds.size})`);
   }
   
   // Normalize message text by trimming whitespace
@@ -640,6 +671,106 @@ bot.on('channel_post', async (msg) => {
   console.log(`Processing channel post: chatId=${chatId}, messageText=${messageText}`);
   await handleCommand(chatId, messageText, true);
   console.log('Finished processing channel post');
+});
+
+// Health check endpoint
+app.get('/api/health', async (req, res) => {
+  try {
+    const healthData = {
+      online: true,
+      timestamp: new Date().toISOString(),
+      instanceId: INSTANCE_ID,
+      chatIdsCount: chatIds.size,
+      redis: {
+        connected: !!redisClient,
+        status: redisClient ? (redisClient.isOpen ? 'connected' : 'disconnected') : 'not_configured'
+      },
+      telegram: {
+        polling: bot ? bot.isPolling() : false
+      }
+    };
+
+    // Test Redis connectivity if available
+    if (redisClient && redisClient.isOpen) {
+      try {
+        await redisClient.ping();
+        healthData.redis.ping = 'success';
+      } catch (pingError) {
+        healthData.redis.ping = 'failed';
+        healthData.redis.pingError = pingError.message;
+      }
+    }
+
+    res.status(200).json(healthData);
+  } catch (error) {
+    console.error('Health check error:', error);
+    res.status(500).json({ 
+      online: false, 
+      error: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// Redis-specific health check endpoint
+app.get('/api/redis-health', async (req, res) => {
+  if (!redisClient) {
+    return res.status(404).json({ 
+      status: 'not_configured', 
+      message: 'Redis is not configured' 
+    });
+  }
+
+  if (!redisClient.isOpen) {
+    return res.status(503).json({ 
+      status: 'disconnected', 
+      message: 'Redis client is not connected' 
+    });
+  }
+
+  try {
+    const pingResult = await redisClient.ping();
+    const chatIdsCount = await redisClient.exists(CHAT_IDS_KEY);
+    
+    res.status(200).json({
+      status: 'healthy',
+      ping: pingResult,
+      connected: true,
+      chatIdsStored: chatIdsCount > 0,
+      chatIdsKey: CHAT_IDS_KEY,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    res.status(500).json({ 
+      status: 'error',
+      error: error.message,
+      connected: false,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// Route to view current chat IDs (masked for privacy)
+app.get('/api/chat-ids', (req, res) => {
+  try {
+    // Mask chat IDs for privacy (show only last 4 digits)
+    const maskedIds = Array.from(chatIds).map(id => {
+      const strId = String(id);
+      return strId.length > 4 ? '*'.repeat(strId.length - 4) + strId.slice(-4) : strId;
+    });
+
+    res.status(200).json({
+      count: chatIds.size,
+      maskedIds: maskedIds,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Error fetching chat IDs:', error);
+    res.status(500).json({ 
+      error: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
 });
 
 // Health check endpoint
