@@ -304,6 +304,7 @@ Channels subscribed: ${chatIds.size}`).catch((error) => {
       bot.sendMessage(chatId, `🤖 Miku Monday Bot Help 🤖
 
 I automatically send a Hatsune Miku GIF every Monday at 8:00 AM Singapore Time (12:00 AM UTC) to all channels I'm added to.
+I also send daily hype messages at 8:00 AM Singapore Time to build anticipation for Miku Monday!
 
 Available Commands:
 /start - Register this channel/chat with the bot
@@ -476,10 +477,8 @@ if (process.env.NODE_ENV === 'development') {
   });
 }
 
-
-// TEMPORARILY DISABLED: Schedule daily hype messages (runs at 12:00 PM every day)
-/*
-cron.schedule('0 12 * * *', () => {
+// Schedule daily hype messages (runs at 8:00 AM every day)
+cron.schedule('0 8 * * *', () => {
   console.log('Sending daily hype message to all channels...');
   
   // Calculate days until next Monday
@@ -511,7 +510,6 @@ Channels subscribed: ${chatIds.size}`;
     });
   });
 });
-*/
 
 // Handle incoming messages
 bot.on('message', async (msg) => {
@@ -559,7 +557,7 @@ app.get('/api/status', (req, res) => {
       online: true,
       channelCount: chatIds.size,
       nextPost: 'Monday at 8:00 AM (Singapore Time)',
-      dailyHype: '12:00 PM (Singapore Time)',
+      dailyHype: '8:00 AM (Singapore Time)',
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       timestamp: new Date().toISOString()
     };
