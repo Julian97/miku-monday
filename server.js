@@ -80,6 +80,41 @@ async function initRedis() {
   }
 }
 
+// Graceful shutdown handlers
+process.on('SIGTERM', async () => {
+  console.log('SIGTERM received, stopping bot...');
+  try {
+    if (bot) {
+      await bot.stopPolling();
+      console.log('Bot polling stopped');
+    }
+    if (redisClient) {
+      await redisClient.quit();
+      console.log('Redis client disconnected');
+    }
+  } catch (error) {
+    console.error('Error during shutdown:', error);
+  }
+  process.exit(0);
+});
+
+process.on('SIGINT', async () => {
+  console.log('SIGINT received, stopping bot...');
+  try {
+    if (bot) {
+      await bot.stopPolling();
+      console.log('Bot polling stopped');
+    }
+    if (redisClient) {
+      await redisClient.quit();
+      console.log('Redis client disconnected');
+    }
+  } catch (error) {
+    console.error('Error during shutdown:', error);
+  }
+  process.exit(0);
+});
+
 // Log polling status periodically
 setInterval(async () => {
   console.log(`Bot polling status check (Instance: ${INSTANCE_ID})...`);
@@ -192,8 +227,16 @@ async function saveChatIds() {
 }
 
 // Load chat IDs on startup
-initRedis().then(() => {
-  loadChatIds();
+initRedis().then(async () => {
+  // Clear webhook to prevent 409 conflicts
+  try {
+    await bot.deleteWebHook();
+    console.log('Webhook cleared, starting polling...');
+  } catch (err) {
+    console.error('Error clearing webhook:', err);
+  }
+  
+  await loadChatIds();
 });
 
 // Path to the Miku GIF
