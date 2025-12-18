@@ -68,6 +68,7 @@ The bot requires the following environment variables:
 - `DEVELOPER_CHAT_ID` - (Optional) Your Telegram chat ID to receive feedback
 - `CHAT_IDS_ENCRYPTION_KEY` - (Optional) Encryption key for chat IDs storage (defaults to a default key for development)
 - `REDIS_CONNECTION_STRING` - (Optional) Redis connection URL for persistent storage (e.g., `redis://localhost:6379`)
+- `REDIS_PASSWORD` - (Optional) Password for Redis authentication
 
 In production environments (like Zeabur), set these variables in your deployment platform's environment settings rather than using a .env file.
 

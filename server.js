@@ -45,22 +45,32 @@ const bot = new TelegramBot(token, {
 // Redis client
 let redisClient = null;
 const REDIS_URL = process.env.REDIS_CONNECTION_STRING || 'redis://localhost:6379';
+const REDIS_PASSWORD = process.env.REDIS_PASSWORD;
 const CHAT_IDS_KEY = 'miku_monday:chat_ids';
 
 // Initialize Redis client
 async function initRedis() {
   try {
     if (process.env.REDIS_CONNECTION_STRING) {
-      redisClient = redis.createClient({
+      // Build Redis configuration with optional password
+      const redisConfig = {
         url: REDIS_URL
-      });
+      };
+      
+      // Add password if provided
+      if (REDIS_PASSWORD) {
+        redisConfig.password = REDIS_PASSWORD;
+        console.log('Redis password authentication enabled');
+      }
+      
+      redisClient = redis.createClient(redisConfig);
       
       redisClient.on('error', (err) => {
         console.error(`Redis Client Error (Instance: ${INSTANCE_ID}):`, err);
       });
       
       await redisClient.connect();
-      console.log(`Connected to Redis at ${REDIS_URL}`);
+      console.log(`Connected to Redis at ${REDIS_URL}${REDIS_PASSWORD ? ' with authentication' : ''}`);
     } else {
       console.log('No REDIS_CONNECTION_STRING provided, using file-based storage');
     }
