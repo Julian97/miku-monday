@@ -113,10 +113,18 @@ function loadChatIds() {
       console.log(`Loaded ${chatIds.size} chat IDs from encrypted file`);
     } else {
       console.log('No existing chat IDs file found, starting with empty set');
+      // Create an empty chat IDs file
+      saveChatIds();
     }
   } catch (error) {
     console.error('Error loading chat IDs from encrypted file:', error);
     chatIds = new Set(); // Reset to empty set on error
+    // Try to create a new empty file
+    try {
+      saveChatIds();
+    } catch (saveError) {
+      console.error('Error creating initial chat IDs file:', saveError);
+    }
   }
 }
 
