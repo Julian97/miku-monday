@@ -78,11 +78,13 @@ const CHAT_IDS_FILE = 'chat_ids.json';
 // Encryption key (in production, this should come from environment variables)
 const ENCRYPTION_KEY = process.env.CHAT_IDS_ENCRYPTION_KEY || 'default-key-change-in-production';
 const IV_LENGTH = 16; // For AES, this is always 16
+const ALGORITHM = 'aes-256-cbc';
 
 // Encrypt data
 function encrypt(text) {
+  const key = crypto.scryptSync(ENCRYPTION_KEY, 'salt', 32);
   const iv = crypto.randomBytes(IV_LENGTH);
-  const cipher = crypto.createCipher('aes-256-cbc', ENCRYPTION_KEY);
+  const cipher = crypto.createCipheriv(ALGORITHM, key, iv);
   let encrypted = cipher.update(text, 'utf8', 'hex');
   encrypted += cipher.final('hex');
   return iv.toString('hex') + ':' + encrypted;
@@ -90,10 +92,11 @@ function encrypt(text) {
 
 // Decrypt data
 function decrypt(text) {
+  const key = crypto.scryptSync(ENCRYPTION_KEY, 'salt', 32);
   const textParts = text.split(':');
   const iv = Buffer.from(textParts.shift(), 'hex');
   const encryptedText = textParts.join(':');
-  const decipher = crypto.createDecipher('aes-256-cbc', ENCRYPTION_KEY);
+  const decipher = crypto.createDecipheriv(ALGORITHM, key, iv);
   let decrypted = decipher.update(encryptedText, 'hex', 'utf8');
   decrypted += decipher.final('utf8');
   return decrypted;
