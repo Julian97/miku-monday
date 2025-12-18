@@ -1,33 +1,35 @@
 // Web server for handling Telegram webhooks
-require('dotenv').config();
 
-// Generate unique instance ID for debugging multiple instances
-const INSTANCE_ID = `${Math.random().toString(36).substring(2, 15)}-${Date.now()}`;
-console.log(`Starting bot instance: ${INSTANCE_ID}`);
-
-const express = require('express');
-const bodyParser = require('body-parser');
+// Load required modules
 const TelegramBot = require('node-telegram-bot-api');
 const cron = require('node-cron');
+const express = require('express');
 const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
+require('dotenv').config();
+
+// Redis support
+const redis = require('redis');
+
+// Bot configuration
+const token = process.env.TELEGRAM_BOT_TOKEN;
+const developerChatId = process.env.DEVELOPER_CHAT_ID; // Optional: for receiving feedback
+if (!token) {
+  console.error('Error: TELEGRAM_BOT_TOKEN is not set in environment variables');
+  process.exit(1);
+}
+
+// Unique instance ID for debugging multiple instances
+const INSTANCE_ID = crypto.randomBytes(4).toString('hex');
+console.log(`Starting Miku Monday Bot instance: ${INSTANCE_ID}`);
 
 // Create Express app
 const app = express();
 const port = process.env.PORT || 3000;
 
 // Middleware
-app.use(bodyParser.json());
-
-// Get bot token from environment variables
-const token = process.env.TELEGRAM_BOT_TOKEN;
-const developerChatId = process.env.DEVELOPER_CHAT_ID; // Optional: for receiving feedback
-
-if (!token) {
-  console.error('Missing TELEGRAM_BOT_TOKEN in environment variables');
-  process.exit(1);
-}
+app.use(express.json());
 
 // Create a bot instance with additional options for better reliability
 const bot = new TelegramBot(token, {
@@ -40,39 +42,45 @@ const bot = new TelegramBot(token, {
   }
 });
 
-// Log when bot is ready
-bot.on('polling_start', () => {
-  console.log(`=== BOT POLLING STARTED (Instance: ${INSTANCE_ID}) ===`);
-  console.log('Bot is now actively polling for messages');
-});
+// Redis client
+let redisClient = null;
+const REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6379';
+const CHAT_IDS_KEY = 'miku_monday:chat_ids';
 
-console.log('Bot initialized successfully!');
-console.log('Bot token (first 10 chars):', token.substring(0, 10));
-
-// Test if bot can send messages
-console.log('Testing bot message sending capability...');
-
-// Test network connectivity to Telegram
-const https = require('https');
-const url = 'https://api.telegram.org';
-
-https.get(url, (res) => {
-  console.log(`Network test (Instance: ${INSTANCE_ID}) - Connected to Telegram API. Status: ${res.statusCode}`);
-}).on('error', (err) => {
-  console.error(`Network test (Instance: ${INSTANCE_ID}) - Failed to connect to Telegram API:`, err.message);
-});
+// Initialize Redis client
+async function initRedis() {
+  try {
+    if (process.env.REDIS_URL) {
+      redisClient = redis.createClient({
+        url: REDIS_URL
+      });
+      
+      redisClient.on('error', (err) => {
+        console.error(`Redis Client Error (Instance: ${INSTANCE_ID}):`, err);
+      });
+      
+      await redisClient.connect();
+      console.log(`Connected to Redis at ${REDIS_URL}`);
+    } else {
+      console.log('No REDIS_URL provided, using file-based storage');
+    }
+  } catch (error) {
+    console.error(`Failed to connect to Redis (Instance: ${INSTANCE_ID}):`, error);
+    redisClient = null;
+  }
+}
 
 // Log polling status periodically
-setInterval(() => {
+setInterval(async () => {
   console.log(`Bot polling status check (Instance: ${INSTANCE_ID})...`);
   // Periodically save chat IDs to ensure persistence
-  saveChatIds();
+  await saveChatIds();
 }, 30000); // Every 30 seconds
 
 // Store chat IDs to send GIFs to
 let chatIds = new Set();
 
-// File to persist chat IDs
+// File to persist chat IDs (fallback when Redis is not available)
 const CHAT_IDS_FILE = 'chat_ids.json';
 
 // Encryption key (in production, this should come from environment variables)
@@ -102,9 +110,28 @@ function decrypt(text) {
   return decrypted;
 }
 
-// Load chat IDs from file
-function loadChatIds() {
+// Load chat IDs from Redis or file
+async function loadChatIds() {
   try {
+    // Try Redis first if available
+    if (redisClient) {
+      try {
+        const encryptedData = await redisClient.get(CHAT_IDS_KEY);
+        if (encryptedData) {
+          const decryptedData = decrypt(encryptedData);
+          const ids = JSON.parse(decryptedData);
+          chatIds = new Set(ids);
+          console.log(`Loaded ${chatIds.size} chat IDs from Redis`);
+          return;
+        } else {
+          console.log('No existing chat IDs found in Redis, starting with empty set');
+        }
+      } catch (redisError) {
+        console.error('Error loading chat IDs from Redis:', redisError);
+      }
+    }
+    
+    // Fallback to file-based storage
     if (fs.existsSync(CHAT_IDS_FILE)) {
       const encryptedData = fs.readFileSync(CHAT_IDS_FILE, 'utf8');
       const decryptedData = decrypt(encryptedData);
@@ -114,26 +141,39 @@ function loadChatIds() {
     } else {
       console.log('No existing chat IDs file found, starting with empty set');
       // Create an empty chat IDs file
-      saveChatIds();
+      await saveChatIds();
     }
   } catch (error) {
     console.error('Error loading chat IDs from encrypted file:', error);
     chatIds = new Set(); // Reset to empty set on error
     // Try to create a new empty file
     try {
-      saveChatIds();
+      await saveChatIds();
     } catch (saveError) {
       console.error('Error creating initial chat IDs file:', saveError);
     }
   }
 }
 
-// Save chat IDs to file
-function saveChatIds() {
+// Save chat IDs to Redis or file
+async function saveChatIds() {
   try {
     const idsArray = Array.from(chatIds);
     const jsonData = JSON.stringify(idsArray, null, 2);
     const encryptedData = encrypt(jsonData);
+    
+    // Try Redis first if available
+    if (redisClient) {
+      try {
+        await redisClient.set(CHAT_IDS_KEY, encryptedData);
+        console.log(`Saved ${chatIds.size} chat IDs to Redis`);
+        return;
+      } catch (redisError) {
+        console.error('Error saving chat IDs to Redis:', redisError);
+      }
+    }
+    
+    // Fallback to file-based storage
     fs.writeFileSync(CHAT_IDS_FILE, encryptedData);
     console.log(`Saved ${chatIds.size} chat IDs to encrypted file`);
   } catch (error) {
@@ -142,7 +182,9 @@ function saveChatIds() {
 }
 
 // Load chat IDs on startup
-loadChatIds();
+initRedis().then(() => {
+  loadChatIds();
+});
 
 // Path to the Miku GIF
 const mikuGifPath = process.env.MIKU_GIF_PATH || './its-miku-monday.gif';
@@ -160,7 +202,7 @@ function getNextMonday() {
 app.use(express.static('public'));
 
 // Shared command handler function
-function handleCommand(chatId, messageText, isChannel = false) {
+async function handleCommand(chatId, messageText, isChannel = false) {
   console.log('=== HANDLING COMMAND ===');
   console.log(`Handling command: chatId=${chatId}, messageText=${messageText}, isChannel=${isChannel}`);
   console.log(`Message text type: ${typeof messageText}`);
@@ -172,7 +214,7 @@ function handleCommand(chatId, messageText, isChannel = false) {
   
   // Save chat IDs if we added a new one
   if (chatIds.size > sizeBefore) {
-    saveChatIds();
+    await saveChatIds();
     console.log(`New chat ID added and saved: ${chatId}`);
   }
   
@@ -321,7 +363,27 @@ Only the last 4 digits of channel IDs are visible (e.g., ********1234).`).catch(
   // Note: No default response to avoid spamming channels
 }
 
+// Log when bot is ready
+bot.on('polling_start', () => {
+  console.log(`=== BOT POLLING STARTED (Instance: ${INSTANCE_ID}) ===`);
+  console.log('Bot is now actively polling for messages');
+});
 
+console.log('Bot initialized successfully!');
+console.log('Bot token (first 10 chars):', token.substring(0, 10));
+
+// Test if bot can send messages
+console.log('Testing bot message sending capability...');
+
+// Test network connectivity to Telegram
+const https = require('https');
+const url = 'https://api.telegram.org';
+
+https.get(url, (res) => {
+  console.log(`Network test (Instance: ${INSTANCE_ID}) - Connected to Telegram API. Status: ${res.statusCode}`);
+}).on('error', (err) => {
+  console.error(`Network test (Instance: ${INSTANCE_ID}) - Failed to connect to Telegram API:`, err.message);
+});
 
 // Schedule the bot to send the GIF every Monday at 12:00 AM (00:00)
 cron.schedule('0 0 * * 1', () => {
@@ -394,7 +456,7 @@ Channels subscribed: ${chatIds.size}`;
 */
 
 // Handle incoming messages
-bot.on('message', (msg) => {
+bot.on('message', async (msg) => {
   console.log(`=== RECEIVED MESSAGE (Instance: ${INSTANCE_ID}) ===`);
   console.log('Message timestamp:', new Date().toISOString());
   console.log('Message object:', JSON.stringify(msg, null, 2));
@@ -403,13 +465,13 @@ bot.on('message', (msg) => {
   const messageText = msg.text;
   
   console.log(`Processing message: chatId=${chatId}, messageText=${messageText}`);
-  handleCommand(chatId, messageText, false);
+  await handleCommand(chatId, messageText, false);
   console.log('Finished processing message');
 });
 
 
 // Handle incoming channel posts
-bot.on('channel_post', (msg) => {
+bot.on('channel_post', async (msg) => {
   console.log(`=== RECEIVED CHANNEL POST (Instance: ${INSTANCE_ID}) ===`);
   console.log('Channel post timestamp:', new Date().toISOString());
   console.log('Channel post object:', JSON.stringify(msg, null, 2));
@@ -418,7 +480,7 @@ bot.on('channel_post', (msg) => {
   const messageText = msg.text;
   
   console.log(`Processing channel post: chatId=${chatId}, messageText=${messageText}`);
-  handleCommand(chatId, messageText, true);
+  await handleCommand(chatId, messageText, true);
   console.log('Finished processing channel post');
 });
 

@@ -36,16 +36,6 @@ For detailed instructions, see the [User Guide](USER_GUIDE.md).
 - `/countdown` - Show time remaining until next Miku Monday
 - `/feedback` - Send feedback to the developer (@JulianC97)
 
-## Environment Variables
-
-- `TELEGRAM_BOT_TOKEN` - Your Telegram bot token from BotFather
-- `DEVELOPER_CHAT_ID` - (Optional) Chat ID where feedback messages should be sent
-- `MIKU_GIF_PATH` - (Optional) Path to the Miku GIF file (defaults to ./its-miku-monday.gif)
-- `PORT` - (Optional) Port for the web server (defaults to 3000)
-- `CHAT_IDS_ENCRYPTION_KEY` - (Optional) Encryption key for chat IDs storage (defaults to a default key for development)
-
-See `.env.example` for a template of all available environment variables.
-
 ## Technical Implementation
 
 ### Core Components
@@ -61,12 +51,25 @@ See `.env.example` for a template of all available environment variables.
 - **Chat ID Tracking**: Maintains a set of registered channel IDs
 - **Health Monitoring**: Includes health check endpoints
 - **Privacy Protection**: Implements encrypted storage for chat IDs and masked output for developer commands
+- **Persistent Storage**: Supports both Redis and file-based storage for chat ID persistence
 
 ### Deployment
 - **Platform**: Optimized for Zeabur cloud deployment
 - **Environment Variables**: Configurable through environment variables
 - **Static Assets**: Serves static HTML files for web interface
 - **Production Ready**: Clean client-facing distribution without development files
+- **Redis Support**: Optional Redis storage for persistent chat ID management across deployments
+
+## Environment Variables
+
+The bot requires the following environment variables:
+
+- `TELEGRAM_BOT_TOKEN` - Your Telegram bot token from BotFather
+- `DEVELOPER_CHAT_ID` - (Optional) Your Telegram chat ID to receive feedback
+- `CHAT_IDS_ENCRYPTION_KEY` - (Optional) Encryption key for chat IDs storage (defaults to a default key for development)
+- `REDIS_URL` - (Optional) Redis connection URL for persistent storage (e.g., `redis://localhost:6379`)
+
+In production environments (like Zeabur), set these variables in your deployment platform's environment settings rather than using a .env file.
 
 ## Developer Features
 

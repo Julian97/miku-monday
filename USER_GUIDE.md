@@ -57,6 +57,15 @@ This guide explains how to add the Miku Monday Bot to your Telegram channels so 
 
 The `/listchannels` command is restricted to the bot developer only and returns masked, unidentifiable channel data even to the developer. This ensures privacy protection for channels using the bot and prevents exposure of sensitive channel information. Channel IDs are masked to show only the last 4 digits with the rest replaced by asterisks (e.g., ********1234).
 
+## Persistent Storage
+
+The bot supports persistent storage of subscribed channels across deployments:
+
+1. **Redis Storage** (recommended): If a `REDIS_URL` environment variable is provided, chat IDs are stored in Redis with encryption
+2. **File Storage** (fallback): If Redis is not available, chat IDs are stored in an encrypted `chat_ids.json` file
+
+This ensures that your channel subscriptions are maintained even when the bot is restarted or redeployed.
+
 ## Troubleshooting
 
 ### If the bot isn't sending GIFs:
