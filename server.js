@@ -502,10 +502,9 @@ No changes were made.`).catch((error) => {
           });
         }
       }
+    }
   // Note: No default response to avoid spamming channels
-}
-
-// Log when bot is ready
+}// Log when bot is ready
 bot.on('polling_start', () => {
   console.log(`=== BOT POLLING STARTED (Instance: ${INSTANCE_ID}) ===`);
   console.log('Bot is now actively polling for messages');
@@ -672,13 +671,6 @@ app.get('/api/status', (req, res) => {
   }
 });
 
-// Start the server
-app.listen(port, () => {
-  console.log(`Miku Monday Bot server (Instance: ${INSTANCE_ID}) running on port ${port}`);
-  console.log(`Webhook URL: /bot${token}`);
-  console.log('Server started successfully!');
-});
-
 // Handle errors
 bot.on('polling_error', (error) => {
   console.error(`=== POLLING ERROR (Instance: ${INSTANCE_ID}) ===`);
@@ -705,6 +697,7 @@ bot.on('polling_error', (error) => {
 process.on('unhandledRejection', (reason, promise) => {
   console.error('Unhandled Rejection at:', promise, 'reason:', reason);
   // Application specific logging, throwing an error, or other logic here
+  process.exit(1);
 });
 
 // Handle uncaught exceptions
@@ -714,5 +707,11 @@ process.on('uncaughtException', (error) => {
   process.exit(1);
 });
 
-module.exports = app;
+// Start the server
+app.listen(port, () => {
+  console.log(`Miku Monday Bot server (Instance: ${INSTANCE_ID}) running on port ${port}`);
+  console.log(`Webhook URL: /bot${token}`);
+  console.log('Server started successfully!');
+});
 
+module.exports = app;
