@@ -66,6 +66,8 @@ The bot supports persistent storage of subscribed channels across deployments:
 
 For Redis instances that require authentication, set the `REDIS_PASSWORD` environment variable.
 
+With Redis configured, the bot will automatically use Redis for persistent storage, eliminating the need for local file storage. The file-based approach is maintained only as a fallback for environments where Redis is not available.
+
 This ensures that your channel subscriptions are maintained even when the bot is restarted or redeployed.
 
 ## Troubleshooting
