@@ -44,6 +44,8 @@ For detailed instructions, see the [User Guide](USER_GUIDE.md).
 - `PORT` - (Optional) Port for the web server (defaults to 3000)
 - `CHAT_IDS_ENCRYPTION_KEY` - (Optional) Encryption key for chat IDs storage (defaults to a default key for development)
 
+See `.env.example` for a template of all available environment variables.
+
 ## Technical Implementation
 
 ### Core Components

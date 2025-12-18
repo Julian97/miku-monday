@@ -90,6 +90,17 @@ To enhance security and privacy:
 2. This will encrypt the stored chat IDs to protect user privacy
 3. If not set, a default key will be used (not recommended for production)
 
+## Environment Configuration
+
+For local development, copy `.env.example` to `.env` and configure your environment variables:
+
+```bash
+cp .env.example .env
+# Then edit .env with your actual values
+```
+
+In production environments (like Zeabur), set these variables in your deployment platform's environment settings rather than using a .env file.
+
 ## Support
 
 If you encounter any issues, contact the bot owner @JulianC97 for assistance.
