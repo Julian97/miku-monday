@@ -165,7 +165,7 @@ Next scheduled post: Monday 12:00 AM (${formattedDate})`).catch((error) => {
 Channels subscribed: ${chatIds.size}
 Next scheduled post: Monday 12:00 AM (${formattedDate})
 
-Visit https://your-deployment-url/status for detailed status information.`).catch((error) => {
+Visit https://its-miku-monday.zeabur.app/status for detailed status information.`).catch((error) => {
         console.error(`Failed to send status message to chat ${chatId}:`, error.message);
       });
     }
@@ -260,7 +260,7 @@ if (process.env.NODE_ENV === 'development') {
     
     chatIds.forEach(chatId => {
       bot.sendAnimation(chatId, mikuGifPath, {
-        caption: 'Test Miku GIF! 🎉'
+        caption: 'Dev is testing Miku GIF! 🎉\nPlease ignore this message.'
       }).then(() => {
         console.log(`✅ Test Miku GIF sent successfully to chat ${chatId}!`);
       }).catch((error) => {
@@ -362,7 +362,6 @@ app.get('/api/status', (req, res) => {
     console.error('Error fetching status data:', error);
     res.status(500).json({ error: 'Failed to fetch status data' });
   }
-});
 });
 
 // Start the server
