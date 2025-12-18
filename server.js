@@ -276,6 +276,11 @@ async function handleCommand(chatId, messageText, isChannel = false) {
   console.log(`Normalized text: "${normalizedText}"`);
   
   if (normalizedText === '/start' || (isChannel && normalizedText && normalizedText.startsWith('/start'))) {
+    const welcomeMessage = `👋 Hello! I'm the Miku Monday Bot!
+
+I'll send a Hatsune Miku GIF every Monday at 8:00 AM Singapore Time (12:00 AM UTC).
+
+Type /help to see all available commands.`;
     if (isChannel) {
       // Send a confirmation message to the channel
       bot.sendMessage(chatId, `✅ Miku Monday Bot registered!
@@ -286,13 +291,7 @@ Channels subscribed: ${chatIds.size}`).catch((error) => {
         console.error(`Failed to send message to channel ${chatId}:`, error.message);
       });
     } else {
-      bot.sendMessage(chatId, `Hello! Welcome to Miku Monday Bot! 🎉
-
-I'll automatically send a Hatsune Miku GIF every Monday at 12:00 AM.
-
-Just add me to your Telegram channels as an administrator and I'll start sending GIFs there!
-
-Current channels subscribed: ${chatIds.size}`).catch((error) => {
+      bot.sendMessage(chatId, welcomeMessage).catch((error) => {
         console.error(`Failed to send message to chat ${chatId}:`, error.message);
       });
     }
@@ -302,12 +301,16 @@ Current channels subscribed: ${chatIds.size}`).catch((error) => {
     const formattedDate = nextMonday.toLocaleDateString('en-US', options);
     
     if (isChannel) {
-      bot.sendMessage(chatId, `I'm Miku Monday Bot! 🎵
+      bot.sendMessage(chatId, `🤖 Miku Monday Bot Help 🤖
 
-I'll send a Hatsune Miku GIF every Monday at 12:00 AM.
+I automatically send a Hatsune Miku GIF every Monday at 8:00 AM Singapore Time (12:00 AM UTC) to all channels I'm added to.
 
-Channels subscribed: ${chatIds.size}
-Next scheduled post: Monday 12:00 AM (${formattedDate})`).catch((error) => {
+Available Commands:
+/start - Register this channel/chat with the bot
+/help - Show this help message
+/status - Show bot status and next scheduled post
+/countdown - Show time remaining until next Miku Monday
+/feedback - Send feedback to the developer`).catch((error) => {
         console.error(`Failed to send help message to channel ${chatId}:`, error.message);
       });
     } else {
@@ -331,10 +334,12 @@ I'll automatically send a Miku GIF every Monday at 12:00 AM to all channels I'm 
     const formattedDate = nextMonday.toLocaleDateString('en-US', options);
     
     if (isChannel) {
-      bot.sendMessage(chatId, `📊 Miku Monday Bot Status
+      bot.sendMessage(chatId, `📊 Miku Monday Bot Status 📊
+
+I'll automatically send a Miku GIF every Monday at 8:00 AM Singapore Time (12:00 AM UTC) to all channels I'm added to.
 
 Channels subscribed: ${chatIds.size}
-Next scheduled post: Monday 12:00 AM (${formattedDate})`).catch((error) => {
+Next scheduled post: Monday 8:00 AM (${formattedDate})`).catch((error) => {
         console.error(`Failed to send status message to channel ${chatId}:`, error.message);
       });
     } else {
@@ -438,7 +443,7 @@ https.get(url, (res) => {
   console.error(`Network test (Instance: ${INSTANCE_ID}) - Failed to connect to Telegram API:`, err.message);
 });
 
-// Schedule the bot to send the GIF every Monday at 12:00 AM (00:00)
+// Schedule the bot to send the GIF every Monday at 12:00 AM UTC (8:00 AM Singapore Time)
 cron.schedule('0 0 * * 1', () => {
   console.log('Sending Miku GIF to all channels...');
   
@@ -553,7 +558,7 @@ app.get('/api/status', (req, res) => {
     const statusData = {
       online: true,
       channelCount: chatIds.size,
-      nextPost: 'Monday at 12:00 AM (Singapore Time)',
+      nextPost: 'Monday at 8:00 AM (Singapore Time)',
       dailyHype: '12:00 PM (Singapore Time)',
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       timestamp: new Date().toISOString()
