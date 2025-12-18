@@ -345,6 +345,7 @@ Available Commands:
 /help - Show this help message
 /status - Show bot status and next scheduled post
 /countdown - Show time remaining until next Miku Monday
+/unsubscribe - Remove this channel from bot subscriptions
 /feedback - Send feedback to the developer`).catch((error) => {
         console.error(`Failed to send help message to channel ${chatId}:`, error.message);
       });
@@ -374,7 +375,9 @@ I'll automatically send a Miku GIF every Monday at 12:00 AM to all channels I'm 
 I'll automatically send a Miku GIF every Monday at 8:00 AM Singapore Time (12:00 AM UTC) to all channels I'm added to.
 
 Channels subscribed: ${chatIds.size}
-Next scheduled post: Monday 8:00 AM (${formattedDate})`).catch((error) => {
+Next scheduled post: Monday 8:00 AM (${formattedDate})
+
+To unsubscribe this channel, use the /unsubscribe command.`).catch((error) => {
         console.error(`Failed to send status message to channel ${chatId}:`, error.message);
       });
     } else {
@@ -452,7 +455,53 @@ Only the last 4 digits of channel IDs are visible (e.g., ********1234).`).catch(
         console.error(`Failed to send restricted access message to ${chatId}:`, error.message);
       });
     }
-  }
+  } else if (normalizedText === '/unsubscribe') {
+    // Check if this is a private chat (not a channel)
+    if (!isChannel) {
+      bot.sendMessage(chatId, `❌ Unsubscribe Error
+        
+You can only unsubscribe channels from the bot, not private chats. 
+
+To remove the bot from a channel:
+1. Go to your channel settings
+2. Select "Administrators" 
+3. Remove the Miku Monday Bot as an administrator
+
+If you wish to stop receiving direct messages, you can simply ignore them or block the bot.`).catch((error) => {
+          console.error(`Failed to send unsubscribe error message to chat ${chatId}:`, error.message);
+        });
+      } else {
+        // Handle channel unsubscription
+        if (chatIds.has(chatId)) {
+          chatIds.delete(chatId);
+          
+          // Save updated chat IDs
+          saveChatIds().then(() => {
+            bot.sendMessage(chatId, `✅ Successfully Unsubscribed
+            
+This channel has been unsubscribed from Miku Monday Bot.
+You will no longer receive Miku GIFs or daily hype messages here.
+
+To resubscribe in the future, simply send /start@itsmikumondaybot`).catch((error) => {
+              console.error(`Failed to send unsubscribe confirmation to channel ${chatId}:`, error.message);
+            });
+          }).catch((error) => {
+            console.error('Error saving chat IDs after unsubscription:', error);
+            bot.sendMessage(chatId, `⚠️ Unsubscription Notice
+            
+This channel has been unsubscribed from Miku Monday Bot, but there was an error saving the change. Please contact the bot developer if this issue persists.`).catch((error) => {
+              console.error(`Failed to send unsubscribe notice to channel ${chatId}:`, error.message);
+            });
+          });
+        } else {
+          bot.sendMessage(chatId, `ℹ️ Not Subscribed
+            
+This channel is not currently subscribed to Miku Monday Bot.
+No changes were made.`).catch((error) => {
+            console.error(`Failed to send not subscribed message to channel ${chatId}:`, error.message);
+          });
+        }
+      }
   // Note: No default response to avoid spamming channels
 }
 
