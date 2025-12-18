@@ -60,12 +60,24 @@ See `.env.example` for a template of all available environment variables.
 - **Event Handling**: Processes both private messages and channel posts
 - **Chat ID Tracking**: Maintains a set of registered channel IDs
 - **Health Monitoring**: Includes health check endpoints
+- **Privacy Protection**: Implements encrypted storage for chat IDs and masked output for developer commands
 
 ### Deployment
 - **Platform**: Optimized for Zeabur cloud deployment
 - **Environment Variables**: Configurable through environment variables
 - **Static Assets**: Serves static HTML files for web interface
 - **Production Ready**: Clean client-facing distribution without development files
+
+## Developer Features
+
+### Admin Commands
+- `/listchannels` - Lists all subscribed channels with masked IDs for privacy protection
+
+### Privacy & Security
+- **Encrypted Storage**: Chat IDs are stored in an encrypted file using AES-256-CBC
+- **Masked Output**: Even developers only see masked channel IDs (e.g., ********1234)
+- **Environment Isolation**: Sensitive keys are managed through environment variables
+- **Secure Configuration**: Production keys never committed to the repository
 
 ## License
 

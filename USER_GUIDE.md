@@ -49,8 +49,13 @@ This guide explains how to add the Miku Monday Bot to your Telegram channels so 
 - `/status` - Show bot status, subscription info, and next scheduled post date
 - `/countdown` - Show time remaining until next Miku Monday
 - `/feedback` - Send feedback to the developer (@JulianC97)
+- `/listchannels` - Developer-only command for managing subscriptions (privacy protected)
 
 > **Note:** The bot also sends daily hype messages to build anticipation for Miku Monday!
+
+## Privacy Protection
+
+The `/listchannels` command is restricted to the bot developer only and returns masked, unidentifiable channel data even to the developer. This ensures privacy protection for channels using the bot and prevents exposure of sensitive channel information. Channel IDs are masked to show only the last 4 digits with the rest replaced by asterisks (e.g., ********1234).
 
 ## Troubleshooting
 

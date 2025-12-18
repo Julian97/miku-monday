@@ -310,7 +310,10 @@ Total: ${chatIds.size} channels`).catch((error) => {
         console.error(`Failed to send channel list to developer ${chatId}:`, error.message);
       });
     } else {
-      bot.sendMessage(chatId, `🔐 This command is restricted to the bot developer only.`).catch((error) => {
+      bot.sendMessage(chatId, `🔐 This command is restricted to the bot developer only.
+
+🔒 Privacy Notice: Channel information is protected and masked even from the developer.
+Only the last 4 digits of channel IDs are visible (e.g., ********1234).`).catch((error) => {
         console.error(`Failed to send restricted access message to ${chatId}:`, error.message);
       });
     }
