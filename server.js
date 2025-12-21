@@ -645,42 +645,49 @@ cron.schedule('0 16 * * *', () => {
 Rest, reflect, and prepare the next melody. 
 Tomorrow is Miku Monday!
 
-📣 Want to share the excitement? Add @itsmikumondaybot to your channels!`,
+📣 Want to share the excitement? Add @itsmikumondaybot to your channels!
+🌐 Check bot status: https://its-miku-monday.zeabur.app/status`,
     `🎉 IT'S MIKU MONDAY! 🎉
 
 New week, new track—press play!
 
-📣 Love Miku Monday? Share it with your friends! Add @itsmikumondaybot to your channels!`,
+📣 Love Miku Monday? Share it with your friends! Add @itsmikumondaybot to your channels!
+🌐 View bot info: https://its-miku-monday.zeabur.app/status`,
     `🔥 Tuesday Momentum 🔥
 
 Momentum builds; keep the tempo steady. 
 6 more days to Miku Monday!
 
-📣 Spread the Miku joy! Add @itsmikumondaybot to your channels!`,
+📣 Spread the Miku joy! Add @itsmikumondaybot to your channels!
+🌐 Check status & info: https://its-miku-monday.zeabur.app/status`,
     `🎼 Wednesday Rhythm 🎼
 
 Halfway there—your rhythm is holding strong. 
 5 more days to Miku Monday!
 
-📣 Share the rhythm! Add @itsmikumondaybot to your channels!`,
+📣 Share the rhythm! Add @itsmikumondaybot to your channels!
+🌐 Bot status info: https://its-miku-monday.zeabur.app/status`,
     `🎯 Thursday Focus 🎯
 
 Fine-tune the details; clarity creates impact. 
 4 more days to Miku Monday!
 
-📣 Focus on sharing! Add @itsmikumondaybot to your channels!`,
+📣 Focus on sharing! Add @itsmikumondaybot to your channels!
+🌐 View bot status: https://its-miku-monday.zeabur.app/status`,
     `✨ Friday Finish ✨
 
 Finish with confidence; let the chorus hit. 
 3 more days to Miku Monday!
 
-📣 Finish strong by sharing! Add @itsmikumondaybot to your channels!`,
+📣 Finish strong by sharing! Add @itsmikumondaybot to your channels!
+🌐 Bot info & status: https://its-miku-monday.zeabur.app/status`,
     `🎸 Saturday Freedom 🎸
 
 Create freely—no schedule, just sound. 
 2 more days to Miku Monday!
 
-📣 Be free to share! Add @itsmikumondaybot to your channels!`
+📣 Be free to share! Add @itsmikumondaybot to your channels!
+🌐 Check our status: https://its-miku-monday.zeabur.app/status`
   ];
   
   // Get the appropriate message for today
@@ -688,7 +695,8 @@ Create freely—no schedule, just sound.
 
 Channels subscribed: ${chatIds.size}
 
-🎵 Join the Miku Monday community! Add @itsmikumondaybot to your channels for weekly Miku fun!`;
+🎵 Join the Miku Monday community! Add @itsmikumondaybot to your channels for weekly Miku fun!
+🌐 Visit https://its-miku-monday.zeabur.app/status for bot status and info!`;
   
   // Send hype message to all registered chat IDs
   chatIds.forEach(chatId => {
