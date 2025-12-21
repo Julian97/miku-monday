@@ -594,9 +594,15 @@ if (process.env.NODE_ENV === 'development') {
 cron.schedule('0 16 * * *', () => {
   console.log('Sending daily hype message to all channels...');
   
-  // Get current day of week (0 = Sunday, 1 = Monday, etc.)
+  // Get current day of week in GMT+8 timezone (0 = Sunday, 1 = Monday, etc.)
   const now = new Date();
-  const dayOfWeek = now.getDay();
+  const gmt8Date = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Singapore' }));
+  const dayOfWeek = gmt8Date.getDay();
+  
+  console.log(`📅 UTC date: ${now.toISOString()}`);
+  console.log(`📅 GMT+8 date: ${gmt8Date.toLocaleString('en-US', { timeZone: 'Asia/Singapore' })}`);
+  console.log(`📅 Day of week in GMT+8 (0=Sun, 1=Mon, etc.): ${dayOfWeek}`);
+  console.log(`📅 Selected message index: ${dayOfWeek}`);
   
   // Create day-specific hype messages
   const hypeMessages = [
