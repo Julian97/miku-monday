@@ -403,10 +403,12 @@ I'll automatically send a Miku GIF every Monday at 12:00 AM to all channels I'm 
     if (isChannel) {
       // Get current time in GMT+8
       const nowUtc = new Date();
-      const nowGmt8 = new Date(nowUtc.toLocaleString('en-US', { timeZone: 'Asia/Singapore' }));
+      // Properly convert UTC to GMT+8 using timezone offset
+      const gmt8Offset = 8 * 60; // GMT+8 in minutes
+      const gmt8Time = new Date(nowUtc.getTime() + (gmt8Offset * 60000));
       const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-      const currentDayName = dayNames[nowGmt8.getDay()];
-      const currentTimeGmt8 = nowGmt8.toLocaleTimeString('en-US', { 
+      const currentDayName = dayNames[gmt8Time.getDay()];
+      const currentTimeGmt8 = gmt8Time.toLocaleTimeString('en-US', { 
         timeZone: 'Asia/Singapore',
         hour12: false,
         hour: '2-digit',
@@ -437,15 +439,22 @@ Visit https://its-miku-monday.zeabur.app/status for detailed status information.
   } else if (normalizedText === '/countdown') {
     // Get current time in GMT+8
     const nowUtc = new Date();
-    const nowGmt8 = new Date(nowUtc.toLocaleString('en-US', { timeZone: 'Asia/Singapore' }));
+    // Properly convert UTC to GMT+8 using timezone offset
+    const gmt8Offset = 8 * 60; // GMT+8 in minutes
+    const gmt8Time = new Date(nowUtc.getTime() + (gmt8Offset * 60000));
     
     // Calculate next Monday at 00:00 GMT+8
-    const nextMondayGmt8 = new Date(nowGmt8);
-    nextMondayGmt8.setDate(nowGmt8.getDate() + (8 - nowGmt8.getDay()) % 7);
+    const nextMondayGmt8 = new Date(gmt8Time);
+    nextMondayGmt8.setDate(gmt8Time.getDate() + (8 - gmt8Time.getDay()) % 7);
     nextMondayGmt8.setHours(0, 0, 0, 0);
     
+    // If next Monday is today and it's already past 00:00, set to next week
+    if (nextMondayGmt8 <= gmt8Time) {
+      nextMondayGmt8.setDate(nextMondayGmt8.getDate() + 7);
+    }
+    
     // Convert back to UTC for calculation
-    const nextMondayUtc = new Date(nextMondayGmt8.toLocaleString('en-US', { timeZone: 'UTC' }));
+    const nextMondayUtc = new Date(nextMondayGmt8.getTime() - (gmt8Offset * 60000));
     
     const timeDiff = nextMondayUtc.getTime() - nowUtc.getTime();
     const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
@@ -455,8 +464,8 @@ Visit https://its-miku-monday.zeabur.app/status for detailed status information.
     
     // Get current day name and time in GMT+8
     const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    const currentDayName = dayNames[nowGmt8.getDay()];
-    const currentTimeGmt8 = nowGmt8.toLocaleTimeString('en-US', { 
+    const currentDayName = dayNames[gmt8Time.getDay()];
+    const currentTimeGmt8 = gmt8Time.toLocaleTimeString('en-US', { 
       timeZone: 'Asia/Singapore',
       hour12: false,
       hour: '2-digit',
@@ -630,7 +639,9 @@ cron.schedule('0 16 * * *', () => {
   
   // Get current day of week in GMT+8 timezone (0 = Sunday, 1 = Monday, etc.)
   const now = new Date();
-  const gmt8Date = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Singapore' }));
+  // Properly convert UTC to GMT+8 using timezone offset
+  const gmt8Offset = 8 * 60; // GMT+8 in minutes
+  const gmt8Date = new Date(now.getTime() + (gmt8Offset * 60000));
   const dayOfWeek = gmt8Date.getDay();
   
   console.log(`📅 UTC date: ${now.toISOString()}`);
@@ -852,10 +863,12 @@ app.get('/api/status', (req, res) => {
   try {
     // Get current time in GMT+8
     const nowUtc = new Date();
-    const nowGmt8 = new Date(nowUtc.toLocaleString('en-US', { timeZone: 'Asia/Singapore' }));
+    // Properly convert UTC to GMT+8 using timezone offset
+    const gmt8Offset = 8 * 60; // GMT+8 in minutes
+    const gmt8Time = new Date(nowUtc.getTime() + (gmt8Offset * 60000));
     const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    const currentDayName = dayNames[nowGmt8.getDay()];
-    const currentTimeGmt8 = nowGmt8.toLocaleTimeString('en-US', { 
+    const currentDayName = dayNames[gmt8Time.getDay()];
+    const currentTimeGmt8 = gmt8Time.toLocaleTimeString('en-US', { 
       timeZone: 'Asia/Singapore',
       hour12: false,
       hour: '2-digit',
