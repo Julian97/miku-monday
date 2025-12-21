@@ -643,36 +643,52 @@ cron.schedule('0 16 * * *', () => {
     `🎵 Sunday Hype! 🎵
 
 Rest, reflect, and prepare the next melody. 
-Tomorrow is Miku Monday!`,
+Tomorrow is Miku Monday!
+
+📣 Want to share the excitement? Add @itsmikumondaybot to your channels!`,
     `🎉 IT'S MIKU MONDAY! 🎉
 
-New week, new track—press play.`,
+New week, new track—press play!
+
+📣 Love Miku Monday? Share it with your friends! Add @itsmikumondaybot to your channels!`,
     `🔥 Tuesday Momentum 🔥
 
 Momentum builds; keep the tempo steady. 
-6 more days to Miku Monday.`,
+6 more days to Miku Monday!
+
+📣 Spread the Miku joy! Add @itsmikumondaybot to your channels!`,
     `🎼 Wednesday Rhythm 🎼
 
 Halfway there—your rhythm is holding strong. 
-5 more days to Miku Monday.`,
+5 more days to Miku Monday!
+
+📣 Share the rhythm! Add @itsmikumondaybot to your channels!`,
     `🎯 Thursday Focus 🎯
 
 Fine-tune the details; clarity creates impact. 
-4 more days to Miku Monday.`,
+4 more days to Miku Monday!
+
+📣 Focus on sharing! Add @itsmikumondaybot to your channels!`,
     `✨ Friday Finish ✨
 
 Finish with confidence; let the chorus hit. 
-3 more days to Miku Monday.`,
+3 more days to Miku Monday!
+
+📣 Finish strong by sharing! Add @itsmikumondaybot to your channels!`,
     `🎸 Saturday Freedom 🎸
 
 Create freely—no schedule, just sound. 
-2 more days to Miku Monday.`
+2 more days to Miku Monday!
+
+📣 Be free to share! Add @itsmikumondaybot to your channels!`
   ];
   
   // Get the appropriate message for today
   const hypeMessage = `${hypeMessages[dayOfWeek]}
 
-Channels subscribed: ${chatIds.size}`;
+Channels subscribed: ${chatIds.size}
+
+🎵 Join the Miku Monday community! Add @itsmikumondaybot to your channels for weekly Miku fun!`;
   
   // Send hype message to all registered chat IDs
   chatIds.forEach(chatId => {
