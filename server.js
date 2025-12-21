@@ -343,7 +343,7 @@ async function handleCommand(chatId, messageText, isChannel = false) {
   if (normalizedText === '/start' || (isChannel && normalizedText && normalizedText.startsWith('/start'))) {
     const welcomeMessage = `👋 Hello! I'm the Miku Monday Bot!
 
-I'll send a Hatsune Miku GIF every Monday at 8:00 AM Singapore Time (12:00 AM UTC).
+I'll send a Hatsune Miku GIF every Monday at 12:00 AM GMT+8 (4:00 PM UTC).
 
 Type /help to see all available commands.`;
     if (isChannel) {
@@ -368,8 +368,8 @@ Channels subscribed: ${chatIds.size}`).catch((error) => {
     if (isChannel) {
       bot.sendMessage(chatId, `🤖 Miku Monday Bot Help 🤖
 
-I automatically send a Hatsune Miku GIF every Monday at 8:00 AM Singapore Time (12:00 AM UTC) to all channels I'm added to.
-I also send daily hype messages at 8:00 AM Singapore Time with day-specific content to build anticipation for Miku Monday!
+I automatically send a Hatsune Miku GIF every Monday at 12:00 AM GMT+8 (4:00 PM UTC) to all channels I'm added to.
+I also send daily hype messages at 12:00 AM GMT+8 to build anticipation for Miku Monday!
 
 Available Commands:
 /start - Register this channel/chat with the bot
@@ -403,10 +403,10 @@ I'll automatically send a Miku GIF every Monday at 12:00 AM to all channels I'm 
     if (isChannel) {
       bot.sendMessage(chatId, `📊 Miku Monday Bot Status 📊
 
-I'll automatically send a Miku GIF every Monday at 8:00 AM Singapore Time (12:00 AM UTC) to all channels I'm added to.
+I'll automatically send a Miku GIF every Monday at 12:00 AM GMT+8 (4:00 PM UTC) to all channels I'm added to.
 
 Channels subscribed: ${chatIds.size}
-Next scheduled post: Monday 8:00 AM (${formattedDate})
+Next scheduled post: Monday 12:00 AM GMT+8 (${formattedDate})
 
 To unsubscribe this channel, use the /unsubscribe command.`).catch((error) => {
         console.error(`Failed to send status message to channel ${chatId}:`, error.message);
@@ -590,8 +590,8 @@ if (process.env.NODE_ENV === 'development') {
   });
 }
 
-// Schedule daily hype messages (runs at 8:00 AM every day)
-cron.schedule('0 8 * * *', () => {
+// Schedule daily hype messages (runs at 12:00 AM GMT+8 every day)
+cron.schedule('0 16 * * *', () => {
   console.log('Sending daily hype message to all channels...');
   
   // Get current day of week (0 = Sunday, 1 = Monday, etc.)
@@ -789,8 +789,8 @@ app.get('/api/status', (req, res) => {
     const statusData = {
       online: true,
       channelCount: chatIds.size,
-      nextPost: 'Monday at 8:00 AM (Singapore Time)',
-      dailyHype: '8:00 AM (Singapore Time) with day-specific content',
+      nextPost: 'Monday at 12:00 AM GMT+8',
+      dailyHype: '12:00 AM GMT+8 with day-specific content',
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       timestamp: new Date().toISOString()
     };
