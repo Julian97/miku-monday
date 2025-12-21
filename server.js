@@ -401,14 +401,27 @@ I'll automatically send a Miku GIF every Monday at 12:00 AM to all channels I'm 
     const formattedDate = nextMonday.toLocaleDateString('en-US', options);
     
     if (isChannel) {
+      // Get current time in GMT+8
+      const nowUtc = new Date();
+      const nowGmt8 = new Date(nowUtc.toLocaleString('en-US', { timeZone: 'Asia/Singapore' }));
+      const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      const currentDayName = dayNames[nowGmt8.getDay()];
+      const currentTimeGmt8 = nowGmt8.toLocaleTimeString('en-US', { 
+        timeZone: 'Asia/Singapore',
+        hour12: false,
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      });
+      
       bot.sendMessage(chatId, `📊 Miku Monday Bot Status 📊
+
+Current time (GMT+8): ${currentDayName}, ${currentTimeGmt8}
 
 I'll automatically send a Miku GIF every Monday at 12:00 AM GMT+8 (4:00 PM UTC) to all channels I'm added to.
 
 Channels subscribed: ${chatIds.size}
-Next scheduled post: Monday 12:00 AM GMT+8 (${formattedDate})
-
-To unsubscribe this channel, use the /unsubscribe command.`).catch((error) => {
+Next scheduled post: Monday 12:00 AM GMT+8 (${formattedDate})`).catch((error) => {
         console.error(`Failed to send status message to channel ${chatId}:`, error.message);
       });
     } else {
@@ -422,19 +435,40 @@ Visit https://its-miku-monday.zeabur.app/status for detailed status information.
       });
     }
   } else if (normalizedText === '/countdown') {
-    const now = new Date();
-    const nextMonday = new Date();
-    nextMonday.setDate(now.getDate() + (1 + 7 - now.getDay()) % 7);
-    nextMonday.setHours(0, 0, 0, 0);
+    // Get current time in GMT+8
+    const nowUtc = new Date();
+    const nowGmt8 = new Date(nowUtc.toLocaleString('en-US', { timeZone: 'Asia/Singapore' }));
     
-    const timeDiff = nextMonday.getTime() - now.getTime();
+    // Calculate next Monday at 00:00 GMT+8
+    const nextMondayGmt8 = new Date(nowGmt8);
+    nextMondayGmt8.setDate(nowGmt8.getDate() + (8 - nowGmt8.getDay()) % 7);
+    nextMondayGmt8.setHours(0, 0, 0, 0);
+    
+    // Convert back to UTC for calculation
+    const nextMondayUtc = new Date(nextMondayGmt8.toLocaleString('en-US', { timeZone: 'UTC' }));
+    
+    const timeDiff = nextMondayUtc.getTime() - nowUtc.getTime();
     const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
     const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
     const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
     
+    // Get current day name and time in GMT+8
+    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const currentDayName = dayNames[nowGmt8.getDay()];
+    const currentTimeGmt8 = nowGmt8.toLocaleTimeString('en-US', { 
+      timeZone: 'Asia/Singapore',
+      hour12: false,
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    });
+    
     bot.sendMessage(chatId, `⏰ Countdown to next Miku Monday:
-${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds`).catch((error) => {
+    
+Current time (GMT+8): ${currentDayName}, ${currentTimeGmt8}
+
+Time remaining: ${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds`).catch((error) => {
       console.error(`Failed to send countdown message to ${isChannel ? 'channel' : 'chat'} ${chatId}:`, error.message);
     });
   } else if (normalizedText === '/feedback') {
@@ -792,11 +826,29 @@ app.get('/status', (req, res) => {
 // API endpoint for status data
 app.get('/api/status', (req, res) => {
   try {
+    // Get current time in GMT+8
+    const nowUtc = new Date();
+    const nowGmt8 = new Date(nowUtc.toLocaleString('en-US', { timeZone: 'Asia/Singapore' }));
+    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const currentDayName = dayNames[nowGmt8.getDay()];
+    const currentTimeGmt8 = nowGmt8.toLocaleTimeString('en-US', { 
+      timeZone: 'Asia/Singapore',
+      hour12: false,
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    });
+    
     const statusData = {
       online: true,
       channelCount: chatIds.size,
       nextPost: 'Monday at 12:00 AM GMT+8',
       dailyHype: '12:00 AM GMT+8 with day-specific content',
+      currentTime: {
+        day: currentDayName,
+        time: currentTimeGmt8,
+        timezone: 'GMT+8'
+      },
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       timestamp: new Date().toISOString()
     };
