@@ -66,8 +66,8 @@ The bot implements proper shutdown handlers for SIGTERM and SIGINT signals to en
 ## Scheduling Details
 
 ### Main Miku Monday Post
-- **Schedule**: `0 0 * * 1` (00:00 UTC on Mondays)
-- **Time**: 12:00 AM GMT+8 (4:00 PM UTC)
+- **Schedule**: `0 16 * * 0` (16:00 UTC on Sundays)
+- **Time**: 12:00 AM GMT+8 (4:00 PM UTC Sunday)
 - **Content**: Sends Miku GIF to all registered channels
 
 ### Daily Hype Messages

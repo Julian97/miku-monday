@@ -1,10 +1,10 @@
 # Miku Monday Bot
 
-A Telegram bot that automatically posts a Hatsune Miku GIF every Monday at 12:00 AM UTC (8:00 AM Singapore Time) to Telegram channels. Designed for easy deployment on cloud platforms like Zeabur, allowing non-technical users to simply add the bot to their channels without any complex setup.
+A Telegram bot that automatically posts a Hatsune Miku GIF every Monday at 12:00 AM GMT+8 (4:00 PM UTC Sunday) to Telegram channels. Designed for easy deployment on cloud platforms like Zeabur, allowing non-technical users to simply add the bot to their channels without any complex setup.
 
 ## Features
 
-- Automatically sends a Miku GIF every Monday at 12:00 AM GMT+8 (4:00 PM UTC)
+- Automatically sends a Miku GIF every Monday at 12:00 AM GMT+8 (4:00 PM UTC Sunday)
 - Sends daily hype messages at 12:00 AM GMT+8 with day-specific content to build anticipation
 - Works with multiple Telegram channels
 - No technical setup required for end users
@@ -24,7 +24,7 @@ You can easily add it to your Telegram channels or have the bot private DM you:
 3. Add the bot to your Telegram channels as an administrator
 4. Send `/start@itsmikumondaybot` to register your channel to the bot
 
-That's it! The bot will automatically send a Miku GIF every Monday at 12:00 AM UTC (8:00 AM Singapore Time) to your channels.
+That's it! The bot will automatically send a Miku GIF every Monday at 12:00 AM GMT+8 (4:00 PM UTC Sunday) to your channels.
 
 For detailed instructions, see the [User Guide](USER_GUIDE.md).
 
