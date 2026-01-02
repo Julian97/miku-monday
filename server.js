@@ -600,8 +600,8 @@ https.get(url, (res) => {
   console.error(`Network test (Instance: ${INSTANCE_ID}) - Failed to connect to Telegram API:`, err.message);
 });
 
-// Schedule the bot to send the GIF every Monday at 12:00 AM UTC (8:00 AM Singapore Time)
-cron.schedule('0 0 * * 1', () => {
+// Schedule the bot to send the GIF every Monday at 12:00 AM GMT+8 (4:00 PM UTC Sunday)
+cron.schedule('0 16 * * 0', () => {
   console.log('Sending Miku GIF to all channels...');
   
   // Send GIF to all registered chat IDs
