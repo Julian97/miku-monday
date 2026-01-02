@@ -685,7 +685,7 @@ Create freely—no schedule, just sound.
 
 Channels subscribed: ${chatIds.size}
 
-🎵 Join the Miku Monday community! Add @itsmikumondaybot to your channels for weekly Miku fun!
+🎵 Add @itsmikumondaybot to your channels for weekly Miku fun!
 🌐 Visit https://its-miku-monday.zeabur.app/status for bot status and info!`;  
   // Send hype message to all registered chat IDs
   chatIds.forEach(chatId => {
